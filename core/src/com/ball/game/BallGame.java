@@ -110,6 +110,19 @@ public class BallGame extends ApplicationAdapter {
 				paddleRight.move(paddleRight.getX(), touch.y - paddleRight.getHeight() / 2);
 				paddleRight.updateBounds();
 			}
+			paddleLeft.integrate(dt);
+			paddleLeft.updateBounds();
+			paddleRight.integrate(dt);
+			paddleRight.updateBounds();
+			paddleUp.integrate(dt);
+			paddleUp.updateBounds();
+			paddleDown.integrate(dt);
+			paddleDown.updateBounds();
+			CollisionUtils.paddleVerticalCheck(paddleLeft, fieldTop, fieldBottom);
+			CollisionUtils.paddleVerticalCheck(paddleRight, fieldTop, fieldBottom);
+			CollisionUtils.paddleHorizontalCheck(paddleUp,fieldLeft,fieldRight);
+			CollisionUtils.paddleHorizontalCheck(paddleDown,fieldLeft,fieldRight);
+			
 
 		}
 	}

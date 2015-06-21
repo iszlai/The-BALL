@@ -74,4 +74,26 @@ public class CollisionUtils {
 		bounds.setWidth(newWidth);
 		paddle.setBounds(bounds);
 	}
+	
+ public static void paddleVerticalCheck(Paddle paddle1,float fieldTop,float fieldBottom){
+	if(paddle1.top() > fieldTop) {
+		paddle1.move(paddle1.getX(), fieldTop - paddle1.getHeight());
+		paddle1.setVelocity(0f, 0f);
+	}
+	if(paddle1.bottom() < fieldBottom) {
+		paddle1.move(paddle1.getX(), fieldBottom);
+		paddle1.setVelocity(0f, 0f);
+	}
+	}
+ public static void paddleHorizontalCheck(Paddle paddle1,float fieldLeft,float fieldRight){
+	if(paddle1.left() < fieldLeft) {
+		paddle1.move(fieldLeft, paddle1.getY());
+		paddle1.setVelocity(0f, 0f);
+	}
+	if(paddle1.right() > fieldRight) {
+		paddle1.move(fieldRight-paddle1.getWidth(), paddle1.getY());
+		paddle1.setVelocity(0f, 0f);
+	}
+	}
+ 
 }
