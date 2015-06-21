@@ -16,7 +16,6 @@ public class GameObjectFactory {
 		case DOWN: {
 			Paddle paddle = getPaddle(9.5f * BLOCK_SIZE,0.5f* BLOCK_SIZE);
 			paddle.setPosition(new Vector2(1f * BLOCK_SIZE, 0.5f * BLOCK_SIZE));
-			System.out.println("DOWN:"+paddle.getBounds());
 			return paddle;
 		}
 		case UP: {
@@ -46,5 +45,9 @@ public class GameObjectFactory {
 		Ball ball= new Ball(BLOCK_SIZE/3, BLOCK_SIZE/3);
 		ball.move(field.x + (field.width - ball.getWidth()) / 2, field.y + (field.height - ball.getHeight()) / 2);
 		return ball;
+	}
+	
+	public Rectangle getBorder (){
+		return new Rectangle(0.5f*BLOCK_SIZE-5, 0.5f*BLOCK_SIZE-5, 10.5f*BLOCK_SIZE+10, 6.5f*BLOCK_SIZE+5);
 	}
 }
