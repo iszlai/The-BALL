@@ -162,7 +162,7 @@ public class BallGame extends ApplicationAdapter {
 			ball.reflect(false, true);
 
 			Vector2 velocity = ball.getVelocity();
-			velocity.setAngle(getReflectionAngle(paddleLeft));
+			velocity.setAngle(getReflectionAngle(paddleDown));
 			velocity.scl(BALL_VELOCITY_MODIFIER);
 			ball.setVelocity(velocity);
 		}
