@@ -4,13 +4,9 @@ import com.badlogic.gdx.math.Vector2;
 
 public class GameObjectFactory {
 
-	private final int WIDTH_GAME;
-	private final int HEIGTH_GAME;
 	private final float BLOCK_SIZE;
 
 	public GameObjectFactory(int gameWidth, int gameHeight) {
-		this.WIDTH_GAME = gameWidth;
-		this.HEIGTH_GAME = gameHeight;
 		BLOCK_SIZE = (gameWidth + gameHeight)/20;
 	}
 
@@ -23,16 +19,16 @@ public class GameObjectFactory {
 		}
 		case UP: {
 			Paddle paddle = getPaddle(9.5f * BLOCK_SIZE,0.5f* BLOCK_SIZE);
-			paddle.setPosition(new Vector2(1f * BLOCK_SIZE, 7f * BLOCK_SIZE));
+			paddle.setPosition(new Vector2(1f * BLOCK_SIZE, 6f * BLOCK_SIZE));
 			return paddle;
 		}
 		case LEFT: {
-			Paddle paddle = getPaddle(0.5f * BLOCK_SIZE, 6f * BLOCK_SIZE);
+			Paddle paddle = getPaddle(0.5f * BLOCK_SIZE, 5f * BLOCK_SIZE);
 			paddle.setPosition(new Vector2(0.5f*BLOCK_SIZE, 1f * BLOCK_SIZE));
 			return paddle;
 		}
 		case RIGHT: {
-			Paddle paddle = getPaddle(0.5f * BLOCK_SIZE, 6f * BLOCK_SIZE);
+			Paddle paddle = getPaddle(0.5f * BLOCK_SIZE, 5f * BLOCK_SIZE);
 			paddle.setPosition(new Vector2(10.5f * BLOCK_SIZE, 1f * BLOCK_SIZE));
 			return paddle;
 		}
