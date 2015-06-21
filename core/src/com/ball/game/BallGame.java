@@ -115,6 +115,8 @@ public class BallGame extends ApplicationAdapter {
 					handleRightCollision();
 				}else if(ball.getBounds().overlaps(paddleUp.getBounds())) {
 					handleUpCollision();
+				}else if(ball.getBounds().overlaps(paddleDown.getBounds())) {
+					handleDownCollision();
 				}
 	}
 
@@ -143,11 +145,9 @@ public class BallGame extends ApplicationAdapter {
 	}
 	
 	private void handleUpCollision() {
-			System.out.println("b-t:"+ball.top()+" p-b:"+paddleUp.bottom() +"v:"+(ball.top() < paddleUp.bottom()));
-		if(ball.top() >paddleUp.bottom() && ball.bottom() > paddleUp.bottom()) {
-			System.out.println("handel up collision");
-			ball.move(paddleUp.bottom()-ball.getHeight(), ball.getX());
-			ball.reflect(true, false);
+		if(ball.top() >paddleUp.bottom() && ball.bottom() < paddleUp.bottom()) {
+			ball.move(ball.getX(), paddleUp.bottom()-ball.getHeight());
+			ball.reflect(false, true);
 
 			Vector2 velocity = ball.getVelocity();
 			velocity.setAngle(getReflectionAngle(paddleUp));
@@ -157,9 +157,9 @@ public class BallGame extends ApplicationAdapter {
 	}
 	
 	private void handleDownCollision() {
-		if(ball.bottom() < paddleLeft.right() && ball.right() > paddleLeft.right()) {
-			ball.move(paddleLeft.right(), ball.getY());
-			ball.reflect(true, false);
+		if(ball.bottom() < paddleLeft.top() && ball.top() < paddleLeft.top()) {
+			ball.move(ball.getX(), paddleDown.top());
+			ball.reflect(false, true);
 
 			Vector2 velocity = ball.getVelocity();
 			velocity.setAngle(getReflectionAngle(paddleLeft));
