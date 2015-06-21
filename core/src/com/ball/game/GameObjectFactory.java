@@ -1,5 +1,6 @@
 package com.ball.game;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class GameObjectFactory {
@@ -15,6 +16,7 @@ public class GameObjectFactory {
 		case DOWN: {
 			Paddle paddle = getPaddle(9.5f * BLOCK_SIZE,0.5f* BLOCK_SIZE);
 			paddle.setPosition(new Vector2(1f * BLOCK_SIZE, 0.5f * BLOCK_SIZE));
+			System.out.println("DOWN:"+paddle.getBounds());
 			return paddle;
 		}
 		case UP: {
@@ -40,7 +42,9 @@ public class GameObjectFactory {
 		return new Paddle(width, height);
 	}
 	
-	public Ball getBall(){
-		return new Ball(BLOCK_SIZE/3, BLOCK_SIZE/3);
+	public Ball getBall(Rectangle field){
+		Ball ball= new Ball(BLOCK_SIZE/3, BLOCK_SIZE/3);
+		ball.move(field.x + (field.width - ball.getWidth()) / 2, field.y + (field.height - ball.getHeight()) / 2);
+		return ball;
 	}
 }

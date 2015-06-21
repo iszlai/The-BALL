@@ -9,6 +9,7 @@ public abstract class GameObject {
 		private Rectangle bounds = new Rectangle();
 		private Vector2 position = new Vector2();
 		private Vector2 velocity = new Vector2();
+		
 
 	// Constructors
 		public GameObject(float width, float height) {

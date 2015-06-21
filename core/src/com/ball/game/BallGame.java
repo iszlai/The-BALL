@@ -33,17 +33,17 @@ public class BallGame extends ApplicationAdapter {
 		WINDOW_WIDTH = Gdx.graphics.getWidth();
 		WINDOW_HEIGHT = Gdx.graphics.getHeight();
 		setUpScreenBounds();
-		setUpGameObjects();
 		reset();
 	}
 
 	private void setUpGameObjects() {
 		GameObjectFactory goFactory = new GameObjectFactory(WINDOW_WIDTH, WINDOW_HEIGHT);
-		ball = goFactory.getBall();
+		ball = goFactory.getBall(field);
 		paddleUp = goFactory.getRegurarPaddle(PaddleDirection.UP);
 		paddleDown = goFactory.getRegurarPaddle(PaddleDirection.DOWN);
 		paddleLeft = goFactory.getRegurarPaddle(PaddleDirection.LEFT);
 		paddleRight = goFactory.getRegurarPaddle(PaddleDirection.RIGHT);
+		
 	}
 
 	private void setUpScreenBounds() {
@@ -67,56 +67,47 @@ public class BallGame extends ApplicationAdapter {
 	}
 
 	private void updatePaddles(float dt) {
-		float sign_X = 0;
-		float sign_Y = 0;
 		boolean moveUp = false;
 		boolean moveDown = false;
 		boolean moveLeft = false;
 		boolean moveRight = false;
-		Vector2 touch = null ;
+		Vector2 touch = null;
 		if (Gdx.input.isTouched()) {
-			 touch = new Vector2(Gdx.input.getX(), WINDOW_HEIGHT - Gdx.input.getY());
-			// System.out.println(touch);
-			if (paddleDown.getBounds().contains(touch)) {
-				sign_X = Math.signum(Gdx.input.getDeltaX());
+			touch = new Vector2(Gdx.input.getX(), WINDOW_HEIGHT - Gdx.input.getY());
+			if (paddleDown.getTouchBounds().contains(touch)) {
 				moveDown = true;
-			} else if (paddleUp.getBounds().contains(touch)) {
-				sign_X = Math.signum(Gdx.input.getDeltaX());
+			} else if (paddleUp.getTouchBounds().contains(touch)) {
 				moveUp = true;
-			} else if (paddleLeft.getBounds().contains(touch)) {
-				sign_Y = Math.signum(Gdx.input.getDeltaY());
+			} else if (paddleLeft.getTouchBounds().contains(touch)) {
 				moveLeft = true;
-			} else if (paddleRight.getBounds().contains(touch)) {
-				sign_Y = Math.signum(Gdx.input.getDeltaY());
+			} else if (paddleRight.getTouchBounds().contains(touch)) {
 				moveRight = true;
 			}
 
-		}
-		if (moveUp) {
-			paddleUp.move(touch.x, paddleUp.getY());
-		} else if (moveDown) {
-			paddleDown.setVelocity(sign_X * 400f, 0f);
-		} else if (moveLeft) {
-			paddleLeft.setVelocity(0, 400f*-sign_Y*100/paddleLeft.getHeight());
-		} else if (moveRight) {
-			paddleRight.setVelocity(0, 400f*-sign_Y);
-		} else {
-			paddleDown.setVelocity(0f, 0f);
-			paddleUp.setVelocity(0f, 0f);
-			paddleLeft.setVelocity(0f, 0f);
-			paddleRight.setVelocity(0f, 0f);
-		}
-		paddleDown.integrate(dt);
-		paddleUp.integrate(dt);
-		paddleLeft.integrate(dt);
-		paddleRight.integrate(dt);
+			if (moveUp) {
+				paddleUp.move(touch.x - paddleUp.getWidth() / 2, paddleUp.getY());
+				paddleUp.updateBounds();
+			} else if (moveDown) {
+				paddleDown.move(touch.x - paddleDown.getWidth() / 2, paddleDown.getY());
+				paddleDown.updateBounds();
+			} else if (moveLeft) {
+				paddleLeft.move(paddleLeft.getX(), touch.y - paddleLeft.getHeight() / 2);
+				paddleLeft.updateBounds();
+			} else if (moveRight) {
+				paddleRight.move(paddleRight.getX(), touch.y - paddleRight.getHeight() / 2);
+				paddleRight.updateBounds();
+			}
+//			paddleDown.integrate(dt);
+//			paddleUp.integrate(dt);
+//			paddleLeft.integrate(dt);
+//			paddleRight.integrate(dt);
+
 		
-		paddleDown.updateBounds();
-		paddleUp.updateBounds();
-		paddleLeft.updateBounds();
-		paddleRight.updateBounds();
-	
+		
+		
+			
 		}
+	}
 
 	private void draw(float dt) {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -142,13 +133,14 @@ public class BallGame extends ApplicationAdapter {
 	}
 
 	public void reset() {
+		setUpGameObjects();
+		
 		// Reset ball
-		ball.move(field.x + (field.width - ball.getWidth()) / 2, field.y + (field.height - ball.getHeight()) / 2);
 		Vector2 velocity = ball.getVelocity();
 		velocity.set(BALL_VELOCITY, 0f);
 		velocity.setAngle(-135f);
 		ball.setVelocity(velocity);
-
+		
 	}
 
 	void updateBall(float dt) {
@@ -157,20 +149,24 @@ public class BallGame extends ApplicationAdapter {
 		GeometryUtil.ballLimitVelocity(ball);
 		// Field collision
 		if (ball.left() < fieldLeft) {
-			ball.move(fieldLeft, ball.getY());
-			ball.reflect(true, false);
+//			ball.move(fieldLeft, ball.getY());
+//			ball.reflect(true, false);
+			reset();
 		}
 		if (ball.right() > fieldRight) {
-			ball.move(fieldRight - ball.getWidth(), ball.getY());
-			ball.reflect(true, false);
+//			ball.move(fieldRight - ball.getWidth(), ball.getY());
+//			ball.reflect(true, false);
+			reset();
 		}
 		if (ball.bottom() < fieldBottom) {
-			ball.move(ball.getX(), fieldBottom);
-			ball.reflect(false, true);
+//			ball.move(ball.getX(), fieldBottom);
+//			ball.reflect(false, true);
+			reset();
 		}
 		if (ball.top() > fieldTop) {
-			ball.move(ball.getX(), fieldTop - ball.getHeight());
-			ball.reflect(false, true);
+//			ball.move(ball.getX(), fieldTop - ball.getHeight());
+//			ball.reflect(false, true);
+			reset();
 		}
 
 		// Paddle collision
