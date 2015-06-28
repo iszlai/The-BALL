@@ -13,6 +13,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 import com.ball.game.objects.Ball;
 import com.ball.game.objects.GameObjectFactory;
 import com.ball.game.objects.Paddle;
@@ -28,7 +30,7 @@ public class BallGame extends AbstractGameScreen {
 	private static final Color HORIZONTAL_COLOR = new Color(0.35f, 0.36f, 0.50f, 1f);
 	private static final Color BALL_COLOR = new Color(0.96f, 0.26f, 0.21f, 1f);
 	private static final Color BORDER_COLOR = new Color(0.38f, 0.49f, 0.55f, 1);
-	private static float BALL_VELOCITY = 300f;
+	private static float BALL_VELOCITY = 0f;
 	// FPSLogger logger=new FPSLogger();
 	int gameCount = 0;
 	GameObjectFactory goFactory;
@@ -63,6 +65,16 @@ public class BallGame extends AbstractGameScreen {
 		goFactory = new GameObjectFactory(WINDOW_WIDTH, WINDOW_HEIGHT);
 		reset();
 		setUpScreenBounds();
+		Timer.schedule(new Task() {
+			
+			@Override
+			public void run() {
+				System.out.println("##RUN");
+				BALL_VELOCITY=300;
+				ball.setVelocity(getBallVelocity());
+				
+			}
+		}, 1.5f);
 	}
 
 	private void setUpGameObjects() {
@@ -97,6 +109,7 @@ public class BallGame extends AbstractGameScreen {
 
 		update(delta);
 		draw(delta);
+		
 
 	}
 
@@ -203,16 +216,20 @@ public class BallGame extends AbstractGameScreen {
 		if (gameCount > 4) {
 			game.setScreen(new ScoreScreen(game, score));
 		} else {
-			gameCount++;
 			System.out.println("RESET");
 			setUpGameObjects();
 
 			// Reset ball
-			Vector2 velocity = ball.getVelocity();
-			velocity.set(BALL_VELOCITY, 0f);
-			velocity.setAngle(-135f);
+			Vector2 velocity = getBallVelocity();
 			ball.setVelocity(velocity);
 		}
+	}
+
+	private Vector2 getBallVelocity() {
+		Vector2 velocity = ball.getVelocity();
+		velocity.set(BALL_VELOCITY, 0f);
+		velocity.setAngle(-135f);
+		return velocity;
 	}
 
 	void updateBall(float dt) {
@@ -223,21 +240,25 @@ public class BallGame extends AbstractGameScreen {
 		if (ball.left() < fieldLeft) {
 			// ball.move(fieldLeft, ball.getY());
 			// ball.reflect(true, false);
+			gameCount++;
 			reset();
 		}
 		if (ball.right() > fieldRight) {
 			// ball.move(fieldRight - ball.getWidth(), ball.getY());
 			// ball.reflect(true, false);
+			gameCount++;
 			reset();
 		}
 		if (ball.bottom() < fieldBottom) {
 			// ball.move(ball.getX(), fieldBottom);
 			// ball.reflect(false, true);
+			gameCount++;
 			reset();
 		}
 		if (ball.top() > fieldTop) {
 			// ball.move(ball.getX(), fieldTop - ball.getHeight());
 			// ball.reflect(false, true);
+			gameCount++;
 			reset();
 		}
 
@@ -269,6 +290,15 @@ public class BallGame extends AbstractGameScreen {
 		shapeRenderer.dispose();
 		spriteBatch.dispose();
 		generator.dispose();
+	}
+	
+	private void initial(){
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 
