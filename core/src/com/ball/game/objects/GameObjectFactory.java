@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class GameObjectFactory {
 
-	private final float BLOCK_SIZE;
+	public final float BLOCK_SIZE;
 
 	public GameObjectFactory(int gameWidth, int gameHeight) {
 		BLOCK_SIZE = (gameWidth + gameHeight)/20;
@@ -48,6 +48,6 @@ public class GameObjectFactory {
 	}
 	
 	public Rectangle getBorder (){
-		return new Rectangle(0.5f*BLOCK_SIZE-5, 0.5f*BLOCK_SIZE-5, 10.5f*BLOCK_SIZE+10, 6.5f*BLOCK_SIZE+5);
+		return new Rectangle(0.5f*BLOCK_SIZE-5, 0.5f*BLOCK_SIZE-5, 10.5f*BLOCK_SIZE+10, 6f*BLOCK_SIZE+5);
 	}
 }

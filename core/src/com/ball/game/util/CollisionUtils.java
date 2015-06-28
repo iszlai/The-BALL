@@ -6,7 +6,7 @@ import com.ball.game.objects.Ball;
 import com.ball.game.objects.Paddle;
 
 public class CollisionUtils {
-	private static final float BALL_VELOCITY_MODIFIER = 1.05f;
+	private static final float BALL_VELOCITY_MODIFIER = 1.01f;
 
 	public static void handleRightCollision(Ball ball, Paddle paddleRight) {
 		if (ball.right() > paddleRight.left() && ball.left() < paddleRight.left()) {
@@ -18,7 +18,7 @@ public class CollisionUtils {
 			velocity.scl(BALL_VELOCITY_MODIFIER);
 			ball.setVelocity(velocity);
 
-			shrinkVerticlePaddle(paddleRight);
+			shrinkVerticlePaddle(ball.getHeight(),paddleRight);
 
 		}
 	}
@@ -32,7 +32,7 @@ public class CollisionUtils {
 			velocity.setAngle(GeometryUtil.getReflectionAngle(ball, paddleLeft));
 			velocity.scl(BALL_VELOCITY_MODIFIER);
 			ball.setVelocity(velocity);
-			shrinkVerticlePaddle(paddleLeft);
+			shrinkVerticlePaddle(ball.getHeight(), paddleLeft);
 		}
 	}
 
@@ -46,33 +46,33 @@ public class CollisionUtils {
 			velocity.scl(BALL_VELOCITY_MODIFIER);
 			ball.setVelocity(velocity);
 
-			shrinkHorizontalPaddle(paddleUp);
+			shrinkHorizontalPaddle(ball.getWidth(),paddleUp);
 		}
 	}
 
 	public static void handleDownCollision(Ball ball, Paddle paddleDown) {
 		if (ball.bottom() < paddleDown.top() && ball.top() > paddleDown.top()) {
-			ball.move(ball.getX(), paddleDown.top());
+			ball.move(ball.getX(), paddleDown.top()+ball.getHeight()/2);
 			ball.reflect(false, true);
 
 			Vector2 velocity = ball.getVelocity();
 			velocity.setAngle(GeometryUtil.getReflectionAngle(ball, paddleDown));
 			velocity.scl(BALL_VELOCITY_MODIFIER);
 			ball.setVelocity(velocity);
-			shrinkHorizontalPaddle(paddleDown);
+			shrinkHorizontalPaddle(ball.getWidth(),paddleDown);
 		}
 	}
 
-	private static void shrinkVerticlePaddle(Paddle paddle) {
+	private static void shrinkVerticlePaddle(float shrinkBase,Paddle paddle) {
 		Rectangle bounds = paddle.getBounds();
-		float newHeight = bounds.getHeight() * 0.80f;
+		float newHeight = bounds.getHeight() -shrinkBase;
 		bounds.setHeight(newHeight);
 		paddle.setBounds(bounds);
 	}
 
-	private static void shrinkHorizontalPaddle(Paddle paddle) {
+	private static void shrinkHorizontalPaddle(float shrinkBase, Paddle paddle) {
 		Rectangle bounds = paddle.getBounds();
-		float newWidth = bounds.getWidth() * 0.80f;
+		float newWidth = bounds.getWidth() -shrinkBase;
 		bounds.setWidth(newWidth);
 		paddle.setBounds(bounds);
 	}

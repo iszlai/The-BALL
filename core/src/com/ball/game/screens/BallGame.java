@@ -4,6 +4,11 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
@@ -12,7 +17,9 @@ import com.ball.game.objects.Ball;
 import com.ball.game.objects.GameObjectFactory;
 import com.ball.game.objects.Paddle;
 import com.ball.game.objects.PaddleDirection;
+
 import static com.ball.game.util.CollisionUtils.*;
+
 import com.ball.game.util.GeometryUtil;
 
 public class BallGame extends AbstractGameScreen {
@@ -21,7 +28,7 @@ public class BallGame extends AbstractGameScreen {
 	private static final Color HORIZONTAL_COLOR = new Color(0.35f, 0.36f, 0.50f, 1f);
 	private static final Color BALL_COLOR = new Color(0.96f, 0.26f, 0.21f, 1f);
 	private static final Color BORDER_COLOR = new Color(0.38f, 0.49f, 0.55f, 1);
-	private static final float BALL_VELOCITY = 350f;
+	private static float BALL_VELOCITY = 300f;
 	// FPSLogger logger=new FPSLogger();
 	int gameCount = 0;
 	GameObjectFactory goFactory;
@@ -38,6 +45,11 @@ public class BallGame extends AbstractGameScreen {
 	private ShapeRenderer shapeRenderer;
 	private float fieldBottom, fieldLeft, fieldRight, fieldTop;
 	int score;
+	private FreeTypeFontGenerator generator;
+	private FreeTypeFontParameter parameter;
+	private BitmapFont font;
+	private GlyphLayout layout;
+	private SpriteBatch spriteBatch;
 
 	public BallGame(Game game) {
 		super(game);
@@ -61,6 +73,14 @@ public class BallGame extends AbstractGameScreen {
 		paddleLeft = goFactory.getRegurarPaddle(PaddleDirection.LEFT);
 		paddleRight = goFactory.getRegurarPaddle(PaddleDirection.RIGHT);
 		border = goFactory.getBorder();
+		generator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
+		parameter = new FreeTypeFontParameter();
+		parameter.size = Math.round (Gdx.graphics.getDensity()*30);
+		font = generator.generateFont(parameter);
+		font.setColor(new Color(0.96f, 0.26f, 0.21f, 1f));
+		layout = new GlyphLayout();
+		spriteBatch = new SpriteBatch();
+		//BALL_VELOCITY=WINDOW_WIDTH/3;
 
 	}
 
@@ -83,6 +103,7 @@ public class BallGame extends AbstractGameScreen {
 	private void update(float dt) {
 		updateBall(dt);
 		updatePaddles(dt);
+		layout.setText(font, "Score: "+score);
 	}
 
 	private void updatePaddles(float dt) {
@@ -139,7 +160,16 @@ public class BallGame extends AbstractGameScreen {
 		shapeRenderer.begin(ShapeType.Filled);
 		drawBall(dt);
 		drawPaddles();
+		drawScore(dt);
 		shapeRenderer.end();
+	}
+	
+	
+
+	private void drawScore(float dt) {
+		spriteBatch.begin();
+		font.draw(spriteBatch, layout, goFactory.BLOCK_SIZE, WINDOW_HEIGHT-goFactory.BLOCK_SIZE/3);
+		spriteBatch.end();
 	}
 
 	private void drawBorder() {
@@ -213,22 +243,34 @@ public class BallGame extends AbstractGameScreen {
 
 		// Paddle collision
 		if (ball.getBounds().overlaps(paddleLeft.getBounds())) {
-			score+=getScore(paddleLeft.getHeight());
+			score+=getScore(WINDOW_HEIGHT,paddleLeft.getHeight());
 			handleLeftCollision(ball, paddleLeft);
 		} else if (ball.getBounds().overlaps(paddleRight.getBounds())) {
-			score+=getScore(paddleRight.getHeight());
+			score+=getScore(WINDOW_HEIGHT,paddleRight.getHeight());
 			handleRightCollision(ball, paddleRight);
 		} else if (ball.getBounds().overlaps(paddleUp.getBounds())) {
-			score+=getScore(paddleUp.getWidth());
+			score+=getScore(WINDOW_WIDTH,paddleUp.getWidth());
 			handleUpCollision(ball, paddleUp);
 		} else if (ball.getBounds().overlaps(paddleDown.getBounds())) {
-			score+=getScore(paddleDown.getWidth());
+			score+=getScore(WINDOW_WIDTH,paddleDown.getWidth());
 			handleDownCollision(ball, paddleDown);
 		}
 	}
 	
-	public static int getScore(float size){
-		return (1000-Math.round(size))/100;
+	public static int getScore(int max,float size){
+		int score= (max-Math.round(size))/10;
+		System.out.println("size:" +size +" score:"+score);
+		return score;
 	}
+	
+	
+	@Override
+	public void dispose() {
+		shapeRenderer.dispose();
+		spriteBatch.dispose();
+		generator.dispose();
+	}
+	
+
 
 }

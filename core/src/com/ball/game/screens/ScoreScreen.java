@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
 public class ScoreScreen extends AbstractGameScreen{
 
@@ -22,6 +24,8 @@ public class ScoreScreen extends AbstractGameScreen{
 	private TextureAtlas textureAtlas;
 	private AtlasRegion reload;
 	private Sprite sprite;
+	private FreeTypeFontGenerator generator;
+	private FreeTypeFontParameter parameter;
 	
 	public ScoreScreen(Game game,int score) {
 		super(game);
@@ -36,10 +40,16 @@ public class ScoreScreen extends AbstractGameScreen{
 		WINDOW_HEIGHT = Gdx.graphics.getHeight();
 		layout = new GlyphLayout();
 		font = new BitmapFont();
-		font.setColor(new Color(0.96f, 0.26f, 0.21f, 1f));
 		textureAtlas = new TextureAtlas(Gdx.files.internal("ballTextures.atlas"));
 		reload = textureAtlas.findRegion("reload");
 		sprite = new Sprite(reload);
+		generator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
+		parameter = new FreeTypeFontParameter();
+		parameter.size = Math.round (Gdx.graphics.getDensity()*60);
+		font = generator.generateFont(parameter);
+		font.setColor(new Color(0.96f, 0.26f, 0.21f, 1f));
+		sprite.scale(1.1f);
+		sprite.setPosition(WINDOW_WIDTH/3-sprite.getWidth()/2, WINDOW_HEIGHT/4-sprite.getHeight()/2);
 	}
 	@Override
 	public void render(float delta) {
@@ -65,5 +75,12 @@ public class ScoreScreen extends AbstractGameScreen{
 		}
 
 	}
-
+	
+	@Override
+	public void dispose() {
+		Gdx.app.debug("Cubocy", "dispose main menu");
+		spriteBatch.dispose();
+		generator.dispose();
+		textureAtlas.dispose();
+	}
 }
