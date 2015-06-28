@@ -1,28 +1,29 @@
-package com.ball.game;
+package com.ball.game.screens;
 
-import static com.ball.game.CollisionUtils.handleDownCollision;
-import static com.ball.game.CollisionUtils.handleLeftCollision;
-import static com.ball.game.CollisionUtils.handleRightCollision;
-import static com.ball.game.CollisionUtils.handleUpCollision;
-
-import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.ball.game.objects.Ball;
+import com.ball.game.objects.GameObjectFactory;
+import com.ball.game.objects.Paddle;
+import com.ball.game.objects.PaddleDirection;
+import static com.ball.game.util.CollisionUtils.*;
+import com.ball.game.util.GeometryUtil;
 
-public class BallGame extends ApplicationAdapter {
+public class BallGame extends AbstractGameScreen {
 
 	private static final Color VERTICAL_COLOR = new Color(0.34f, 0.53f, 0.41f, 1);
 	private static final Color HORIZONTAL_COLOR = new Color(0.35f, 0.36f, 0.50f, 1f);
 	private static final Color BALL_COLOR = new Color(0.96f, 0.26f, 0.21f, 1f);
 	private static final Color BORDER_COLOR = new Color(0.38f, 0.49f, 0.55f, 1);
 	private static final float BALL_VELOCITY = 350f;
-	//FPSLogger logger=new FPSLogger();
+	// FPSLogger logger=new FPSLogger();
+	int gameCount = 0;
 	GameObjectFactory goFactory;
 
 	Paddle paddleUp;
@@ -36,9 +37,14 @@ public class BallGame extends ApplicationAdapter {
 	private Rectangle field = new Rectangle();
 	private ShapeRenderer shapeRenderer;
 	private float fieldBottom, fieldLeft, fieldRight, fieldTop;
+	int score;
+
+	public BallGame(Game game) {
+		super(game);
+	}
 
 	@Override
-	public void create() {
+	public void show() {
 		shapeRenderer = new ShapeRenderer();
 		WINDOW_WIDTH = Gdx.graphics.getWidth();
 		WINDOW_HEIGHT = Gdx.graphics.getHeight();
@@ -67,11 +73,11 @@ public class BallGame extends ApplicationAdapter {
 	}
 
 	@Override
-	public void render() {
-		//logger.log();
-		float dt = Gdx.graphics.getRawDeltaTime();
-		update(dt);
-		draw(dt);
+	public void render(float delta) {
+
+		update(delta);
+		draw(delta);
+
 	}
 
 	private void update(float dt) {
@@ -118,11 +124,10 @@ public class BallGame extends ApplicationAdapter {
 			paddleUp.updateBounds();
 			paddleDown.integrate(dt);
 			paddleDown.updateBounds();
-			CollisionUtils.paddleVerticalCheck(paddleLeft, fieldTop, fieldBottom);
-			CollisionUtils.paddleVerticalCheck(paddleRight, fieldTop, fieldBottom);
-			CollisionUtils.paddleHorizontalCheck(paddleUp,fieldLeft,fieldRight);
-			CollisionUtils.paddleHorizontalCheck(paddleDown,fieldLeft,fieldRight);
-			
+			paddleVerticalCheck(paddleLeft, fieldTop, fieldBottom);
+			paddleVerticalCheck(paddleRight, fieldTop, fieldBottom);
+			paddleHorizontalCheck(paddleUp, fieldLeft, fieldRight);
+			paddleHorizontalCheck(paddleDown, fieldLeft, fieldRight);
 
 		}
 	}
@@ -165,14 +170,19 @@ public class BallGame extends ApplicationAdapter {
 	}
 
 	public void reset() {
-		setUpGameObjects();
+		if (gameCount > 4) {
+			game.setScreen(new ScoreScreen(game, score));
+		} else {
+			gameCount++;
+			System.out.println("RESET");
+			setUpGameObjects();
 
-		// Reset ball
-		Vector2 velocity = ball.getVelocity();
-		velocity.set(BALL_VELOCITY, 0f);
-		velocity.setAngle(-135f);
-		ball.setVelocity(velocity);
-
+			// Reset ball
+			Vector2 velocity = ball.getVelocity();
+			velocity.set(BALL_VELOCITY, 0f);
+			velocity.setAngle(-135f);
+			ball.setVelocity(velocity);
+		}
 	}
 
 	void updateBall(float dt) {
@@ -203,14 +213,22 @@ public class BallGame extends ApplicationAdapter {
 
 		// Paddle collision
 		if (ball.getBounds().overlaps(paddleLeft.getBounds())) {
+			score+=getScore(paddleLeft.getHeight());
 			handleLeftCollision(ball, paddleLeft);
 		} else if (ball.getBounds().overlaps(paddleRight.getBounds())) {
+			score+=getScore(paddleRight.getHeight());
 			handleRightCollision(ball, paddleRight);
 		} else if (ball.getBounds().overlaps(paddleUp.getBounds())) {
+			score+=getScore(paddleUp.getWidth());
 			handleUpCollision(ball, paddleUp);
 		} else if (ball.getBounds().overlaps(paddleDown.getBounds())) {
+			score+=getScore(paddleDown.getWidth());
 			handleDownCollision(ball, paddleDown);
 		}
+	}
+	
+	public static int getScore(float size){
+		return (1000-Math.round(size))/100;
 	}
 
 }

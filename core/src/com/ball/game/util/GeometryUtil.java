@@ -1,6 +1,8 @@
-package com.ball.game;
+package com.ball.game.util;
 
 import com.badlogic.gdx.math.Vector2;
+import com.ball.game.objects.Ball;
+import com.ball.game.objects.Paddle;
 
 public class GeometryUtil {
 
