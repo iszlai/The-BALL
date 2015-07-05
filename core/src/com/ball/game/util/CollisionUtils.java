@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.ball.game.objects.Ball;
 import com.ball.game.objects.Paddle;
+import com.ball.game.objects.utils.GameObjectFactory;
 
 public class CollisionUtils {
 	private static final float BALL_VELOCITY_MODIFIER = 1.01f;
@@ -18,7 +19,7 @@ public class CollisionUtils {
 			velocity.scl(BALL_VELOCITY_MODIFIER);
 			ball.setVelocity(velocity);
 
-			shrinkVerticlePaddle(ball.getHeight(),paddleRight);
+			shrinkVerticlePaddle(ball.getHeight() * 2, paddleRight);
 
 		}
 	}
@@ -32,7 +33,7 @@ public class CollisionUtils {
 			velocity.setAngle(GeometryUtil.getReflectionAngle(ball, paddleLeft));
 			velocity.scl(BALL_VELOCITY_MODIFIER);
 			ball.setVelocity(velocity);
-			shrinkVerticlePaddle(ball.getHeight(), paddleLeft);
+			shrinkVerticlePaddle(ball.getHeight() * 2, paddleLeft);
 		}
 	}
 
@@ -46,56 +47,67 @@ public class CollisionUtils {
 			velocity.scl(BALL_VELOCITY_MODIFIER);
 			ball.setVelocity(velocity);
 
-			shrinkHorizontalPaddle(ball.getWidth(),paddleUp);
+			shrinkHorizontalPaddle(ball.getWidth() * 2, paddleUp);
 		}
 	}
 
 	public static void handleDownCollision(Ball ball, Paddle paddleDown) {
-		if (ball.bottom() < paddleDown.top() && ball.top() > paddleDown.top()) {
-			ball.move(ball.getX(), paddleDown.top()+ball.getHeight()/2);
+		if (ball.getBounds().overlaps(paddleDown.getBounds())) {
+			ball.move(ball.getX(), paddleDown.top());
 			ball.reflect(false, true);
 
 			Vector2 velocity = ball.getVelocity();
 			velocity.setAngle(GeometryUtil.getReflectionAngle(ball, paddleDown));
 			velocity.scl(BALL_VELOCITY_MODIFIER);
 			ball.setVelocity(velocity);
-			shrinkHorizontalPaddle(ball.getWidth(),paddleDown);
+			shrinkHorizontalPaddle(ball.getWidth() * 2, paddleDown);
 		}
 	}
 
-	private static void shrinkVerticlePaddle(float shrinkBase,Paddle paddle) {
+	private static boolean shrinkVerticlePaddle(float shrinkBase, Paddle paddle) {
 		Rectangle bounds = paddle.getBounds();
-		float newHeight = bounds.getHeight() -shrinkBase;
+		float newHeight = bounds.getHeight() - shrinkBase;
+		if(newHeight<GameObjectFactory.BLOCK_SIZE){
+			return true;
+		}
 		bounds.setHeight(newHeight);
 		paddle.setBounds(bounds);
+		return false;
 	}
 
-	private static void shrinkHorizontalPaddle(float shrinkBase, Paddle paddle) {
+	private static boolean shrinkHorizontalPaddle(float shrinkBase, Paddle paddle) {
 		Rectangle bounds = paddle.getBounds();
-		float newWidth = bounds.getWidth() -shrinkBase;
+		float newWidth = bounds.getWidth() - shrinkBase;
+		if(newWidth<GameObjectFactory.BLOCK_SIZE){
+			return true;
+		}
 		bounds.setWidth(newWidth);
 		paddle.setBounds(bounds);
+		return false;
 	}
-	
- public static void paddleVerticalCheck(Paddle paddle1,float fieldTop,float fieldBottom){
-	if(paddle1.top() > fieldTop) {
-		paddle1.move(paddle1.getX(), fieldTop - paddle1.getHeight());
-		paddle1.setVelocity(0f, 0f);
+
+	public static void paddleVerticalCheck(Paddle paddle1, float fieldTop, float fieldBottom) {
+		if (paddle1.top() > fieldTop) {
+			paddle1.move(paddle1.getX(), fieldTop - paddle1.getHeight());
+			paddle1.setVelocity(0f, 0f);
+		}
+		if (paddle1.bottom() < fieldBottom) {
+			paddle1.move(paddle1.getX(), fieldBottom);
+			paddle1.setVelocity(0f, 0f);
+		}
 	}
-	if(paddle1.bottom() < fieldBottom) {
-		paddle1.move(paddle1.getX(), fieldBottom);
-		paddle1.setVelocity(0f, 0f);
+
+	public static void paddleHorizontalCheck(Paddle paddle1, float fieldLeft, float fieldRight) {
+		if (paddle1.left() < fieldLeft) {
+			paddle1.move(fieldLeft, paddle1.getY());
+			paddle1.setVelocity(0f, 0f);
+		}
+		if (paddle1.right() > fieldRight) {
+			paddle1.move(fieldRight - paddle1.getWidth(), paddle1.getY());
+			paddle1.setVelocity(0f, 0f);
+		}
 	}
-	}
- public static void paddleHorizontalCheck(Paddle paddle1,float fieldLeft,float fieldRight){
-	if(paddle1.left() < fieldLeft) {
-		paddle1.move(fieldLeft, paddle1.getY());
-		paddle1.setVelocity(0f, 0f);
-	}
-	if(paddle1.right() > fieldRight) {
-		paddle1.move(fieldRight-paddle1.getWidth(), paddle1.getY());
-		paddle1.setVelocity(0f, 0f);
-	}
-	}
- 
+
+
+
 }

@@ -1,6 +1,7 @@
 package com.ball.game.objects;
 
 import com.badlogic.gdx.math.Vector2;
+import com.ball.game.objects.utils.GameObject;
 
 public class Ball extends GameObject{
 

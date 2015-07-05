@@ -1,5 +1,7 @@
 package com.ball.game.screens;
 
+import java.util.TimerTask;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -16,9 +18,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 import com.ball.game.objects.Ball;
-import com.ball.game.objects.GameObjectFactory;
+import com.ball.game.objects.Magic;
 import com.ball.game.objects.Paddle;
-import com.ball.game.objects.PaddleDirection;
+import com.ball.game.objects.utils.GameObjectFactory;
+import com.ball.game.objects.utils.PaddleDirection;
 
 import static com.ball.game.util.CollisionUtils.*;
 
@@ -30,7 +33,8 @@ public class BallGame extends AbstractGameScreen {
 	private static final Color HORIZONTAL_COLOR = new Color(0.35f, 0.36f, 0.50f, 1f);
 	private static final Color BALL_COLOR = new Color(0.96f, 0.26f, 0.21f, 1f);
 	private static final Color BORDER_COLOR = new Color(0.38f, 0.49f, 0.55f, 1);
-	private static float BALL_VELOCITY = 0f;
+	public static float BALL_VELOCITY = 0f;
+	public static float RESET_BALL_VELOCITY = 0f;
 	// FPSLogger logger=new FPSLogger();
 	int gameCount = 0;
 	GameObjectFactory goFactory;
@@ -41,6 +45,7 @@ public class BallGame extends AbstractGameScreen {
 	Paddle paddleRight;
 	Ball ball;
 	Rectangle border;
+	Magic magic;
 	int WINDOW_WIDTH;
 	int WINDOW_HEIGHT;
 	private Rectangle field = new Rectangle();
@@ -52,6 +57,8 @@ public class BallGame extends AbstractGameScreen {
 	private BitmapFont font;
 	private GlyphLayout layout;
 	private SpriteBatch spriteBatch;
+	private long startSpellTime;
+	private long hitSpellTime;
 
 	public BallGame(Game game) {
 		super(game);
@@ -62,17 +69,17 @@ public class BallGame extends AbstractGameScreen {
 		shapeRenderer = new ShapeRenderer();
 		WINDOW_WIDTH = Gdx.graphics.getWidth();
 		WINDOW_HEIGHT = Gdx.graphics.getHeight();
+		RESET_BALL_VELOCITY = (WINDOW_HEIGHT + WINDOW_WIDTH) / 5;
 		goFactory = new GameObjectFactory(WINDOW_WIDTH, WINDOW_HEIGHT);
 		reset();
 		setUpScreenBounds();
 		Timer.schedule(new Task() {
-			
+
 			@Override
 			public void run() {
-				System.out.println("##RUN");
-				BALL_VELOCITY=300;
+				BALL_VELOCITY = RESET_BALL_VELOCITY;
 				ball.setVelocity(getBallVelocity());
-				
+
 			}
 		}, 1.5f);
 	}
@@ -85,14 +92,15 @@ public class BallGame extends AbstractGameScreen {
 		paddleLeft = goFactory.getRegurarPaddle(PaddleDirection.LEFT);
 		paddleRight = goFactory.getRegurarPaddle(PaddleDirection.RIGHT);
 		border = goFactory.getBorder();
+		magic = goFactory.getMagic(border);
 		generator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
 		parameter = new FreeTypeFontParameter();
-		parameter.size = Math.round (Gdx.graphics.getDensity()*30);
+		parameter.size = Math.round(Gdx.graphics.getDensity() * 30);
 		font = generator.generateFont(parameter);
 		font.setColor(new Color(0.96f, 0.26f, 0.21f, 1f));
 		layout = new GlyphLayout();
 		spriteBatch = new SpriteBatch();
-		//BALL_VELOCITY=WINDOW_WIDTH/3;
+		// BALL_VELOCITY=WINDOW_WIDTH/3;
 
 	}
 
@@ -109,14 +117,29 @@ public class BallGame extends AbstractGameScreen {
 
 		update(delta);
 		draw(delta);
-		
 
 	}
 
 	private void update(float dt) {
 		updateBall(dt);
 		updatePaddles(dt);
-		layout.setText(font, "Score: "+score);
+		layout.setText(font, "Score: " + score);
+		if (score % 10 == 4) {
+			if (!magic.isActive()) {
+				magic.setActive(true);
+				java.util.Timer timer = new java.util.Timer();
+
+				timer.schedule(new TimerTask() {
+
+					@Override
+					public void run() {
+						magic.setActive(false);
+					}
+				}, 1500);
+			}
+
+		}
+
 	}
 
 	private void updatePaddles(float dt) {
@@ -150,6 +173,7 @@ public class BallGame extends AbstractGameScreen {
 				paddleRight.move(paddleRight.getX(), touch.y - paddleRight.getHeight() / 2);
 				paddleRight.updateBounds();
 			}
+
 			paddleLeft.integrate(dt);
 			paddleLeft.updateBounds();
 			paddleRight.integrate(dt);
@@ -158,11 +182,11 @@ public class BallGame extends AbstractGameScreen {
 			paddleUp.updateBounds();
 			paddleDown.integrate(dt);
 			paddleDown.updateBounds();
-			paddleVerticalCheck(paddleLeft, fieldTop, fieldBottom);
-			paddleVerticalCheck(paddleRight, fieldTop, fieldBottom);
-			paddleHorizontalCheck(paddleUp, fieldLeft, fieldRight);
-			paddleHorizontalCheck(paddleDown, fieldLeft, fieldRight);
 
+			paddleVerticalCheck(paddleLeft, paddleUp.bottom(), paddleDown.top());
+			paddleVerticalCheck(paddleRight, paddleUp.bottom(), paddleDown.top());
+			paddleHorizontalCheck(paddleUp, paddleLeft.right(), paddleRight.left());
+			paddleHorizontalCheck(paddleDown, paddleLeft.right(), paddleRight.left());
 		}
 	}
 
@@ -173,15 +197,21 @@ public class BallGame extends AbstractGameScreen {
 		shapeRenderer.begin(ShapeType.Filled);
 		drawBall(dt);
 		drawPaddles();
-		drawScore(dt);
+		drawMagic(dt);
 		shapeRenderer.end();
+		drawScore(dt);
 	}
-	
-	
+
+	private void drawMagic(float dt) {
+		if (magic.isActive()) {
+			shapeRenderer.setColor(magic.getColor());
+			shapeRenderer.rect(magic.getX(), magic.getY(), magic.getWidth(), magic.getHeight());
+		}
+	}
 
 	private void drawScore(float dt) {
 		spriteBatch.begin();
-		font.draw(spriteBatch, layout, goFactory.BLOCK_SIZE, WINDOW_HEIGHT-goFactory.BLOCK_SIZE/3);
+		font.draw(spriteBatch, layout, goFactory.BLOCK_SIZE, WINDOW_HEIGHT - goFactory.BLOCK_SIZE / 3);
 		spriteBatch.end();
 	}
 
@@ -196,7 +226,7 @@ public class BallGame extends AbstractGameScreen {
 
 	private void drawBall(float dt) {
 		shapeRenderer.setColor(BALL_COLOR);
-		shapeRenderer.circle(ball.getX(), ball.getY(), ball.getWidth());
+		shapeRenderer.rect(ball.getX(), ball.getY(), ball.getWidth(), ball.getHeight());
 	}
 
 	private void drawPaddles() {
@@ -216,7 +246,6 @@ public class BallGame extends AbstractGameScreen {
 		if (gameCount > 4) {
 			game.setScreen(new ScoreScreen(game, score));
 		} else {
-			System.out.println("RESET");
 			setUpGameObjects();
 
 			// Reset ball
@@ -225,9 +254,9 @@ public class BallGame extends AbstractGameScreen {
 		}
 	}
 
-	private Vector2 getBallVelocity() {
-		Vector2 velocity = ball.getVelocity();
-		velocity.set(BALL_VELOCITY, 0f);
+	public static Vector2 getBallVelocity() {
+		Vector2 velocity = new Vector2();
+		velocity.set(RESET_BALL_VELOCITY, 0f);
 		velocity.setAngle(-135f);
 		return velocity;
 	}
@@ -264,35 +293,48 @@ public class BallGame extends AbstractGameScreen {
 
 		// Paddle collision
 		if (ball.getBounds().overlaps(paddleLeft.getBounds())) {
-			score+=getScore(WINDOW_HEIGHT,paddleLeft.getHeight());
+			score += getScore(WINDOW_HEIGHT, paddleLeft.getHeight());
 			handleLeftCollision(ball, paddleLeft);
 		} else if (ball.getBounds().overlaps(paddleRight.getBounds())) {
-			score+=getScore(WINDOW_HEIGHT,paddleRight.getHeight());
+			score += getScore(WINDOW_HEIGHT, paddleRight.getHeight());
 			handleRightCollision(ball, paddleRight);
 		} else if (ball.getBounds().overlaps(paddleUp.getBounds())) {
-			score+=getScore(WINDOW_WIDTH,paddleUp.getWidth());
+			score += getScore(WINDOW_WIDTH, paddleUp.getWidth());
 			handleUpCollision(ball, paddleUp);
 		} else if (ball.getBounds().overlaps(paddleDown.getBounds())) {
-			score+=getScore(WINDOW_WIDTH,paddleDown.getWidth());
+			score += getScore(WINDOW_WIDTH, paddleDown.getWidth());
 			handleDownCollision(ball, paddleDown);
+		} else if (magic.isActive() && ball.getBounds().overlaps(magic.getBounds())) {
+			final Vector2 beforeSpellvelocity = ball.getVelocity();
+			magic.doMagicOnBall(ball);
+			magic.setActive(false);
+			if (!magic.isActive()) {
+				java.util.Timer timer = new java.util.Timer();
+
+				timer.schedule(new TimerTask() {
+
+					@Override
+					public void run() {
+						ball.setVelocity(beforeSpellvelocity);
+					}
+				}, 2000);
+			}
 		}
 	}
-	
-	public static int getScore(int max,float size){
-		int score= (max-Math.round(size))/10;
-		System.out.println("size:" +size +" score:"+score);
+
+	public static int getScore(int max, float size) {
+		int score = (max - Math.round(size)) / 10;
 		return score;
 	}
-	
-	
+
 	@Override
 	public void dispose() {
 		shapeRenderer.dispose();
 		spriteBatch.dispose();
 		generator.dispose();
 	}
-	
-	private void initial(){
+
+	private void initial() {
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
@@ -300,7 +342,5 @@ public class BallGame extends AbstractGameScreen {
 			e.printStackTrace();
 		}
 	}
-	
-
 
 }

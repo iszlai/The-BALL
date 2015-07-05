@@ -1,4 +1,4 @@
-package com.ball.game.objects;
+package com.ball.game.objects.utils;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -49,6 +49,7 @@ public abstract class GameObject {
 
 	// Methods
 		public float bottom() {
+			updateBounds();
 			return bounds.y;
 		}
 		
@@ -81,6 +82,7 @@ public abstract class GameObject {
 		}
 
 		public float left() {
+			updateBounds();
 			return bounds.x;
 		}
 		
@@ -89,6 +91,7 @@ public abstract class GameObject {
 		}
 		
 		public float right() {
+			updateBounds();
 			return bounds.x + bounds.width;
 		}
 
@@ -97,6 +100,7 @@ public abstract class GameObject {
 		}
 		
 		public float top() {
+			updateBounds();
 			return bounds.y + bounds.height;
 		}
 		

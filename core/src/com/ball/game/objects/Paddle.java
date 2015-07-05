@@ -1,6 +1,7 @@
 package com.ball.game.objects;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.ball.game.objects.utils.GameObject;
 
 public class Paddle extends GameObject {
 // Constructors
