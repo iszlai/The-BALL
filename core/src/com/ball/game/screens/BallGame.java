@@ -1,6 +1,9 @@
 package com.ball.game.screens;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -18,6 +21,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.ball.game.objects.Ball;
 import com.ball.game.objects.Magic;
 import com.ball.game.objects.Paddle;
+import com.ball.game.objects.utils.FSTM;
 import com.ball.game.objects.utils.GameObjectFactory;
 import com.ball.game.objects.utils.PaddleDirection;
 
@@ -28,7 +32,7 @@ public class BallGame extends AbstractGameScreen {
 	public static float RESET_BALL_VELOCITY = 0f;
 	// FPSLogger logger=new FPSLogger();
 	public int gameCount = 0;
-	GameObjectFactory goFactory;
+	public GameObjectFactory goFactory;
 
 	public Paddle paddleUp;
 	public Paddle paddleDown;
@@ -51,7 +55,9 @@ public class BallGame extends AbstractGameScreen {
 	private BitmapFont font;
 	private GlyphLayout layout;
 	private SpriteBatch spriteBatch;
-	private AtomicBoolean isMagicOn = new AtomicBoolean(false);
+	public AtomicBoolean isMagicOn = new AtomicBoolean(false);
+	public AtomicLong nrOfBounces = new AtomicLong();
+	public long currentTimeMillis;
 
 	public BallGame(Game game) {
 		super(game);
@@ -59,6 +65,7 @@ public class BallGame extends AbstractGameScreen {
 
 	@Override
 	public void show() {
+		currentTimeMillis = System.currentTimeMillis();
 		shapeRenderer = new ShapeRenderer();
 		WINDOW_WIDTH = Gdx.graphics.getWidth();
 		WINDOW_HEIGHT = Gdx.graphics.getHeight();
@@ -66,16 +73,29 @@ public class BallGame extends AbstractGameScreen {
 		goFactory = new GameObjectFactory(WINDOW_WIDTH, WINDOW_HEIGHT);
 		reset();
 		setUpScreenBounds();
-		// Timer.schedule(new Task() {
-		//
-		// @Override
-		// public void run() {
-		// System.out.println("Reset task");
-		// BALL_VELOCITY = RESET_BALL_VELOCITY;
-		// ball.setVelocity(getBallVelocity());
-		//
-		// }
-		// }, 1.5f);
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+
+			@Override
+			public void run() {
+			//	System.out.println("----------------");
+				if(magic.isInState(FSTM.States.INVISIBLE)){
+					magic.isActive.set(true);
+					magic.transition(FSTM.States.VISIBLE);
+				}else if(magic.isInState(FSTM.States.VISIBLE)){
+					magic.transition(FSTM.States.INVISIBLE);
+					magic.isActive.set(false);
+				}else if(magic.isInState(FSTM.States.SPELL_ACTIVE)){
+					magic.transition(FSTM.States.SPELL_INACTIVE);
+					magic.undoMagicOnBall(ball);
+					magic.isActive.set(false);
+				}else if(magic.isInState(FSTM.States.SPELL_INACTIVE)){
+					magic.transition(FSTM.States.INVISIBLE);
+					magic.isActive.set(false);
+				}
+			}
+		}, 0, 4000);
+
 	}
 
 	private void setUpGameObjects() {
@@ -117,10 +137,7 @@ public class BallGame extends AbstractGameScreen {
 		Ball.updateBall(this, dt);
 		Paddle.updatePaddles(this, dt);
 		layout.setText(font, "Score: " + score);
-		if (score % 10 == 4 && !isMagicOn.get()) {
-			isMagicOn.set(true);
-			System.out.println("should add block");
-		}
+		//Magic.updateMagic(this);
 
 	}
 
@@ -131,12 +148,10 @@ public class BallGame extends AbstractGameScreen {
 		shapeRenderer.begin(ShapeType.Filled);
 		Ball.drawBall(shapeRenderer, ball, dt);
 		Paddle.drawPaddles(this);
-		Magic.drawMagic(this,dt);
+		Magic.drawMagic(this, dt);
 		shapeRenderer.end();
 		drawScore(dt);
 	}
-
-
 
 	private void drawScore(float dt) {
 		spriteBatch.begin();

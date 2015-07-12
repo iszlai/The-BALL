@@ -49,7 +49,9 @@ public class GameObjectFactory {
 
 	public static <T extends Enum<?>> T randomEnum(Class<T> clazz) {
 		int x = RANDOM.nextInt(clazz.getEnumConstants().length);
-		return clazz.getEnumConstants()[x];
+		 T t = clazz.getEnumConstants()[x];
+		 //System.out.println(t);
+		 return t;
 	}
 	
 	public Magic getMagic(Rectangle border){

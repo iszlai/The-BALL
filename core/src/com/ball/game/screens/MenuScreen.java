@@ -37,7 +37,7 @@ public class MenuScreen extends AbstractGameScreen {
 		spriteBatch = new SpriteBatch();
 		WINDOW_WIDTH = Gdx.graphics.getWidth();
 		WINDOW_HEIGHT = Gdx.graphics.getHeight();
-		System.out.println(Gdx.graphics.getDensity() * 128);
+		//System.out.println(Gdx.graphics.getDensity() * 128);
 		textureAtlas = new TextureAtlas(Gdx.files.internal("ballTextures.atlas"));
 		play = textureAtlas.findRegion("play");
 		sprite = new Sprite(play);

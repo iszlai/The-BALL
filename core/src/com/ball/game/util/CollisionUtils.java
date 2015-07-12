@@ -5,11 +5,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.ball.game.objects.Ball;
 import com.ball.game.objects.Paddle;
 import com.ball.game.objects.utils.GameObjectFactory;
+import com.ball.game.objects.utils.PaddleDirection;
+import com.ball.game.screens.BallGame;
 
 public class CollisionUtils {
 	private static final float BALL_VELOCITY_MODIFIER = 1.01f;
 
-	public static void handleRightCollision(Ball ball, Paddle paddleRight) {
+	public static void handleRightCollision(Ball ball, Paddle paddleRight,BallGame ballGame) {
 		if (ball.right() > paddleRight.left() && ball.left() < paddleRight.left()) {
 			ball.move(paddleRight.left() - ball.getWidth(), ball.getY());
 			ball.reflect(true, false);
@@ -19,12 +21,14 @@ public class CollisionUtils {
 			velocity.scl(BALL_VELOCITY_MODIFIER);
 			ball.setVelocity(velocity);
 
-			shrinkVerticlePaddle(ball.getHeight() * 2, paddleRight);
+			if (shrinkVerticlePaddle(ball.getHeight() * 2, paddleRight)){
+				ballGame.paddleRight=ballGame.goFactory.getRegurarPaddle(PaddleDirection.RIGHT);
+			}
 
 		}
 	}
 
-	public static void handleLeftCollision(Ball ball, Paddle paddleLeft) {
+	public static void handleLeftCollision(Ball ball, Paddle paddleLeft,BallGame ballGame) {
 		if (ball.left() < paddleLeft.right() && ball.right() > paddleLeft.right()) {
 			ball.move(paddleLeft.right(), ball.getY());
 			ball.reflect(true, false);
@@ -33,11 +37,13 @@ public class CollisionUtils {
 			velocity.setAngle(GeometryUtil.getReflectionAngle(ball, paddleLeft));
 			velocity.scl(BALL_VELOCITY_MODIFIER);
 			ball.setVelocity(velocity);
-			shrinkVerticlePaddle(ball.getHeight() * 2, paddleLeft);
+			if(shrinkVerticlePaddle(ball.getHeight() * 2, paddleLeft)){
+				ballGame.paddleLeft=ballGame.goFactory.getRegurarPaddle(PaddleDirection.LEFT);
+			}
 		}
 	}
 
-	public static void handleUpCollision(Ball ball, Paddle paddleUp) {
+	public static void handleUpCollision(Ball ball, Paddle paddleUp,BallGame ballGame) {
 		if (ball.top() > paddleUp.bottom() && ball.bottom() < paddleUp.bottom()) {
 			ball.move(ball.getX(), paddleUp.bottom() - ball.getHeight());
 			ball.reflect(false, true);
@@ -47,11 +53,13 @@ public class CollisionUtils {
 			velocity.scl(BALL_VELOCITY_MODIFIER);
 			ball.setVelocity(velocity);
 
-			shrinkHorizontalPaddle(ball.getWidth() * 2, paddleUp);
+			if(shrinkHorizontalPaddle(ball.getWidth() * 2, paddleUp)){
+				ballGame.paddleUp=ballGame.goFactory.getRegurarPaddle(PaddleDirection.UP);
+			}
 		}
 	}
 
-	public static void handleDownCollision(Ball ball, Paddle paddleDown) {
+	public static void handleDownCollision(Ball ball, Paddle paddleDown,BallGame ballGame) {
 		if (ball.getBounds().overlaps(paddleDown.getBounds())) {
 			ball.move(ball.getX(), paddleDown.top());
 			ball.reflect(false, true);
@@ -60,7 +68,9 @@ public class CollisionUtils {
 			velocity.setAngle(GeometryUtil.getReflectionAngle(ball, paddleDown));
 			velocity.scl(BALL_VELOCITY_MODIFIER);
 			ball.setVelocity(velocity);
-			shrinkHorizontalPaddle(ball.getWidth() * 2, paddleDown);
+			if(shrinkHorizontalPaddle(ball.getWidth() * 2, paddleDown)){
+				ballGame.paddleDown=ballGame.goFactory.getRegurarPaddle(PaddleDirection.DOWN);
+			}
 		}
 	}
 
