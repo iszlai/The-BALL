@@ -54,7 +54,7 @@ public class GameObjectFactory {
 	
 	public Magic getMagic(Rectangle border){
 		
-		Magic magic =new Magic(BLOCK_SIZE/1.3f, BLOCK_SIZE/2,randomEnum(MagicType.class));
+		Magic magic =new Magic(BLOCK_SIZE/2, BLOCK_SIZE/2,randomEnum(MagicType.class));
 		float x=border.getX()+randomWithbounds(3, 6)*BLOCK_SIZE;
 		float y=border.getY()+randomWithbounds(2, 3)*BLOCK_SIZE;		
 		magic.setPosition(new Vector2(x, y));

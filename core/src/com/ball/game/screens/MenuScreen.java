@@ -23,7 +23,6 @@ public class MenuScreen extends AbstractGameScreen {
 	private GlyphLayout layout;
 	private TextureAtlas textureAtlas;
 	private TextureRegion play;
-	private TextureRegion playdown;
 	private Sprite sprite;
 	private FreeTypeFontGenerator generator;
 	private FreeTypeFontParameter parameter;
@@ -38,19 +37,19 @@ public class MenuScreen extends AbstractGameScreen {
 		spriteBatch = new SpriteBatch();
 		WINDOW_WIDTH = Gdx.graphics.getWidth();
 		WINDOW_HEIGHT = Gdx.graphics.getHeight();
-		System.out.println(Gdx.graphics.getDensity()*128);
+		System.out.println(Gdx.graphics.getDensity() * 128);
 		textureAtlas = new TextureAtlas(Gdx.files.internal("ballTextures.atlas"));
 		play = textureAtlas.findRegion("play");
 		sprite = new Sprite(play);
-		playdown = textureAtlas.findRegion("play-down");
+		textureAtlas.findRegion("play-down");
 		layout = new GlyphLayout();
 		generator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
 		parameter = new FreeTypeFontParameter();
-		parameter.size = Math.round (Gdx.graphics.getDensity()*100);
+		parameter.size = Math.round(Gdx.graphics.getDensity() * 100);
 		font = generator.generateFont(parameter);
 		font.setColor(new Color(0.96f, 0.26f, 0.21f, 1f));
 		sprite.scale(1.1f);
-		sprite.setPosition(WINDOW_WIDTH/3-sprite.getWidth()/2, WINDOW_HEIGHT/4-sprite.getHeight()/2);
+		sprite.setPosition(WINDOW_WIDTH / 3 - sprite.getWidth() / 2, WINDOW_HEIGHT / 4 - sprite.getHeight() / 2);
 	}
 
 	@Override
@@ -70,7 +69,7 @@ public class MenuScreen extends AbstractGameScreen {
 	private void update(float delta) {
 		if (Gdx.input.isTouched()) {
 			float x = Gdx.input.getX();
-			float y = WINDOW_HEIGHT -Gdx.input.getY();
+			float y = WINDOW_HEIGHT - Gdx.input.getY();
 
 			if (sprite.getBoundingRectangle().contains(x, y)) {
 				game.setScreen(new BallGame(game));
