@@ -1,6 +1,13 @@
 package com.ball.game.screens;
 
-import java.util.TimerTask;
+import static com.ball.game.util.CollisionUtils.handleDownCollision;
+import static com.ball.game.util.CollisionUtils.handleLeftCollision;
+import static com.ball.game.util.CollisionUtils.handleRightCollision;
+import static com.ball.game.util.CollisionUtils.handleUpCollision;
+import static com.ball.game.util.CollisionUtils.paddleHorizontalCheck;
+import static com.ball.game.util.CollisionUtils.paddleVerticalCheck;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -15,16 +22,11 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Timer;
-import com.badlogic.gdx.utils.Timer.Task;
 import com.ball.game.objects.Ball;
 import com.ball.game.objects.Magic;
 import com.ball.game.objects.Paddle;
 import com.ball.game.objects.utils.GameObjectFactory;
 import com.ball.game.objects.utils.PaddleDirection;
-
-import static com.ball.game.util.CollisionUtils.*;
-
 import com.ball.game.util.GeometryUtil;
 
 public class BallGame extends AbstractGameScreen {
@@ -57,9 +59,7 @@ public class BallGame extends AbstractGameScreen {
 	private BitmapFont font;
 	private GlyphLayout layout;
 	private SpriteBatch spriteBatch;
-	private long startSpellTime;
-	private long hitSpellTime;
-
+	private AtomicBoolean isMagicOn=new AtomicBoolean(false);
 	public BallGame(Game game) {
 		super(game);
 	}
@@ -73,15 +73,16 @@ public class BallGame extends AbstractGameScreen {
 		goFactory = new GameObjectFactory(WINDOW_WIDTH, WINDOW_HEIGHT);
 		reset();
 		setUpScreenBounds();
-		Timer.schedule(new Task() {
-
-			@Override
-			public void run() {
-				BALL_VELOCITY = RESET_BALL_VELOCITY;
-				ball.setVelocity(getBallVelocity());
-
-			}
-		}, 1.5f);
+//		Timer.schedule(new Task() {
+//
+//			@Override
+//			public void run() {
+//				System.out.println("Reset task");
+//				BALL_VELOCITY = RESET_BALL_VELOCITY;
+//				ball.setVelocity(getBallVelocity());
+//
+//			}
+//		}, 1.5f);
 	}
 
 	private void setUpGameObjects() {
@@ -124,20 +125,9 @@ public class BallGame extends AbstractGameScreen {
 		updateBall(dt);
 		updatePaddles(dt);
 		layout.setText(font, "Score: " + score);
-		if (score % 10 == 4) {
-			if (!magic.isActive()) {
-				magic.setActive(true);
-				java.util.Timer timer = new java.util.Timer();
-
-				timer.schedule(new TimerTask() {
-
-					@Override
-					public void run() {
-						magic.setActive(false);
-					}
-				}, 1500);
-			}
-
+		if (score % 10 == 4&&!isMagicOn.get()) {
+			isMagicOn.set(true);
+			System.out.println("should add block");
 		}
 
 	}
@@ -211,7 +201,7 @@ public class BallGame extends AbstractGameScreen {
 
 	private void drawScore(float dt) {
 		spriteBatch.begin();
-		font.draw(spriteBatch, layout, goFactory.BLOCK_SIZE, WINDOW_HEIGHT - goFactory.BLOCK_SIZE / 3);
+		font.draw(spriteBatch, layout, GameObjectFactory.BLOCK_SIZE, WINDOW_HEIGHT - GameObjectFactory.BLOCK_SIZE / 3);
 		spriteBatch.end();
 	}
 
@@ -305,20 +295,8 @@ public class BallGame extends AbstractGameScreen {
 			score += getScore(WINDOW_WIDTH, paddleDown.getWidth());
 			handleDownCollision(ball, paddleDown);
 		} else if (magic.isActive() && ball.getBounds().overlaps(magic.getBounds())) {
-			final Vector2 beforeSpellvelocity = ball.getVelocity();
-			magic.doMagicOnBall(ball);
+			System.out.println("collision");
 			magic.setActive(false);
-			if (!magic.isActive()) {
-				java.util.Timer timer = new java.util.Timer();
-
-				timer.schedule(new TimerTask() {
-
-					@Override
-					public void run() {
-						ball.setVelocity(beforeSpellvelocity);
-					}
-				}, 2000);
-			}
 		}
 	}
 
@@ -334,13 +312,6 @@ public class BallGame extends AbstractGameScreen {
 		generator.dispose();
 	}
 
-	private void initial() {
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+
 
 }
