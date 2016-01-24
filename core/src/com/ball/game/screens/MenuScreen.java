@@ -56,7 +56,7 @@ public class MenuScreen extends AbstractGameScreen {
 	public void render(float delta) {
 		Gdx.graphics.getGL20().glClearColor(1f, 0.95f, 0.88f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		layout.setText(font, "Ball Me");
+		layout.setText(font, "Vivace");
 		spriteBatch.begin();
 		font.draw(spriteBatch, layout, WINDOW_WIDTH / 2 - layout.width / 2, WINDOW_HEIGHT - WINDOW_HEIGHT / 8);
 		// spriteBatch.draw(play, 100, 100, 100, 100);
