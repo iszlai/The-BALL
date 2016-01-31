@@ -40,8 +40,8 @@ public class ScoreScreen extends AbstractGameScreen{
 		WINDOW_HEIGHT = Gdx.graphics.getHeight();
 		layout = new GlyphLayout();
 		font = new BitmapFont();
-		textureAtlas = new TextureAtlas(Gdx.files.internal("ballTextures.atlas"));
-		reload = textureAtlas.findRegion("reload");
+		textureAtlas = new TextureAtlas(Gdx.files.internal("vivace.pack"));
+		reload = textureAtlas.findRegion("reset");
 		sprite = new Sprite(reload);
 		generator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
 		parameter = new FreeTypeFontParameter();

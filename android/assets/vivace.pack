@@ -1,0 +1,47 @@
+
+vivace.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+play
+  rotate: false
+  xy: 1, 1
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+portal
+  rotate: false
+  xy: 67, 1
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+reset
+  rotate: false
+  xy: 133, 1
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+speed
+  rotate: false
+  xy: 199, 1
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+heart
+  rotate: false
+  xy: 265, 1
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+freeze
+  rotate: false
+  xy: 331, 1
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1

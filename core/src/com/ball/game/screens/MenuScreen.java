@@ -38,10 +38,10 @@ public class MenuScreen extends AbstractGameScreen {
 		WINDOW_WIDTH = Gdx.graphics.getWidth();
 		WINDOW_HEIGHT = Gdx.graphics.getHeight();
 		//System.out.println(Gdx.graphics.getDensity() * 128);
-		textureAtlas = new TextureAtlas(Gdx.files.internal("ballTextures.atlas"));
+		textureAtlas = new TextureAtlas(Gdx.files.internal("vivace.pack"));
 		play = textureAtlas.findRegion("play");
 		sprite = new Sprite(play);
-		textureAtlas.findRegion("play-down");
+		textureAtlas.findRegion("play");
 		layout = new GlyphLayout();
 		generator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
 		parameter = new FreeTypeFontParameter();

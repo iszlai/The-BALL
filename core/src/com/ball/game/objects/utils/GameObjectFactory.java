@@ -1,5 +1,6 @@
 package com.ball.game.objects.utils;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 import com.badlogic.gdx.math.Rectangle;
@@ -11,7 +12,7 @@ import com.ball.game.objects.Paddle;
 public class GameObjectFactory {
 
 	public static float BLOCK_SIZE;
-	public static final Random RANDOM=new Random();
+	public static final Random RANDOM=new SecureRandom();
 
 	public GameObjectFactory(int gameWidth, int gameHeight) {
 		BLOCK_SIZE = (gameWidth + gameHeight) / 20;

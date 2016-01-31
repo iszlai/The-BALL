@@ -30,7 +30,7 @@ public class SplashScreen extends AbstractGameScreen {
     public SplashScreen(Game game) {
         super(game);
     }
-    
+
     @Override
     public void render(float delta) {
 
