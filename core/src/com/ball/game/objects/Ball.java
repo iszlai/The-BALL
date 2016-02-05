@@ -32,12 +32,15 @@ public class Ball extends GameObject {
 		setVelocity(velocity);
 	}
 
+	//TODO: leave only ball related stuff and ballgame go out , the same for paddles
 	public static void updateBall(BallGame ballGame, float dt) {
 //		System.out.println("bounces"+ballGame.nrOfBounces.get());
 		ballGame.ball.integrate(dt);
 		ballGame.ball.updateBounds();
 		GeometryUtil.ballLimitVelocity(ballGame.ball);
 		// Field collision
+
+		//TODO use or-s
 		if (ballGame.ball.left() < ballGame.fieldLeft) {
 			endRound(ballGame);
 		}

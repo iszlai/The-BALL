@@ -20,6 +20,7 @@ public class GameObjectFactory {
 
 	public Paddle getRegurarPaddle(PaddleDirection paddleDirection) {
 		switch (paddleDirection) {
+			//TODO: consts
 		case DOWN: {
 			Paddle paddle = getPaddle(9.5f * BLOCK_SIZE, 0.5f * BLOCK_SIZE);
 			paddle.setPosition(new Vector2(1f * BLOCK_SIZE, 0.5f * BLOCK_SIZE));
@@ -51,7 +52,6 @@ public class GameObjectFactory {
 	public static <T extends Enum<?>> T randomEnum(Class<T> clazz) {
 		int x = RANDOM.nextInt(clazz.getEnumConstants().length);
 		 T t = clazz.getEnumConstants()[x];
-		 //System.out.println(t);
 		 return t;
 	}
 	

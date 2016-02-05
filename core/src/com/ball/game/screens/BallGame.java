@@ -50,6 +50,7 @@ public class BallGame extends AbstractGameScreen {
 	public float fieldRight;
 	public float fieldTop;
 	public int score;
+	//TODO: FONTSGENERATION should be once
 	private FreeTypeFontGenerator generator;
 	private FreeTypeFontParameter parameter;
 	private BitmapFont font;
@@ -57,7 +58,6 @@ public class BallGame extends AbstractGameScreen {
 	private SpriteBatch spriteBatch;
 	public AtomicBoolean isMagicOn = new AtomicBoolean(false);
 	public AtomicLong nrOfBounces = new AtomicLong();
-	public long currentTimeMillis;
 
 	public BallGame(Game game) {
 		super(game);
@@ -65,10 +65,10 @@ public class BallGame extends AbstractGameScreen {
 
 	@Override
 	public void show() {
-		currentTimeMillis = System.currentTimeMillis();
 		shapeRenderer = new ShapeRenderer();
 		WINDOW_WIDTH = Gdx.graphics.getWidth();
 		WINDOW_HEIGHT = Gdx.graphics.getHeight();
+		//TODO: move to other const after show
 		RESET_BALL_VELOCITY = (WINDOW_HEIGHT + WINDOW_WIDTH) / 5;
 		goFactory = new GameObjectFactory(WINDOW_WIDTH, WINDOW_HEIGHT);
 		reset();
@@ -106,6 +106,7 @@ public class BallGame extends AbstractGameScreen {
 		paddleLeft = goFactory.getRegurarPaddle(PaddleDirection.LEFT);
 		paddleRight = goFactory.getRegurarPaddle(PaddleDirection.RIGHT);
 		border = goFactory.getBorder();
+        //TODO: Check for reuse or seed
 		magic = goFactory.getMagic(border);
 		generator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
 		parameter = new FreeTypeFontParameter();
@@ -127,7 +128,7 @@ public class BallGame extends AbstractGameScreen {
 
 	@Override
 	public void render(float delta) {
-
+        //TODO: maybe reverse?
 		update(delta);
 		draw(delta);
 

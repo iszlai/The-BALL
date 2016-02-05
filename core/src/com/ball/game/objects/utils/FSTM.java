@@ -19,6 +19,7 @@ public class FSTM {
 	
 	
 	private void init(){
+		//TODO: should have 2*2 or 1*3 states
 		validStates=new HashMap<States, List<States>>();
 		validStates.put(States.INVISIBLE, Arrays.asList (States.VISIBLE));
 		validStates.put(States.VISIBLE, Arrays.asList (States.INVISIBLE,States.SPELL_ACTIVE));

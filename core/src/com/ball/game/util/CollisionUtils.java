@@ -44,6 +44,7 @@ public class CollisionUtils {
 	}
 
 	public static void handleUpCollision(Ball ball, Paddle paddleUp,BallGame ballGame) {
+		//TODO: this is already handled
 		if (ball.top() > paddleUp.bottom() && ball.bottom() < paddleUp.bottom()) {
 			ball.move(ball.getX(), paddleUp.bottom() - ball.getHeight());
 			ball.reflect(false, true);

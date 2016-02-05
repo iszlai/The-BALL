@@ -39,33 +39,38 @@ public class MenuScreen extends AbstractGameScreen {
 		WINDOW_HEIGHT = Gdx.graphics.getHeight();
 		//System.out.println(Gdx.graphics.getDensity() * 128);
 		textureAtlas = new TextureAtlas(Gdx.files.internal("vivace.pack"));
-		play = textureAtlas.findRegion("play");
-		sprite = new Sprite(play);
-		textureAtlas.findRegion("play");
+		initPlayButton();
 		layout = new GlyphLayout();
 		generator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
 		parameter = new FreeTypeFontParameter();
 		parameter.size = Math.round(Gdx.graphics.getDensity() * 100);
 		font = generator.generateFont(parameter);
 		font.setColor(new Color(0.96f, 0.26f, 0.21f, 1f));
+		layout.setText(font, "Vivace");
+	}
+
+	private void initPlayButton() {
+		play = textureAtlas.findRegion("play");
+		sprite = new Sprite(play);
 		sprite.scale(1.1f);
+		//TODO: take out sprite logic
 		sprite.setPosition(WINDOW_WIDTH / 3 - sprite.getWidth() / 2, WINDOW_HEIGHT / 4 - sprite.getHeight() / 2);
 	}
 
 	@Override
 	public void render(float delta) {
+		//TODO: colors take out maybe hide
 		Gdx.graphics.getGL20().glClearColor(1f, 0.95f, 0.88f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		layout.setText(font, "Vivace");
 		spriteBatch.begin();
+		//TODO:SIZES
 		font.draw(spriteBatch, layout, WINDOW_WIDTH / 2 - layout.width / 2, WINDOW_HEIGHT - WINDOW_HEIGHT / 8);
-		// spriteBatch.draw(play, 100, 100, 100, 100);
 		sprite.draw(spriteBatch);
 		spriteBatch.end();
 		update(delta);
-		// game.setScreen(new IntroScreen(game));
 	}
 
+	//TODO: insplaybuttonclicked
 	private void update(float delta) {
 		if (Gdx.input.isTouched()) {
 			float x = Gdx.input.getX();
