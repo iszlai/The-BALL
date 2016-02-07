@@ -24,16 +24,15 @@ import com.ball.game.objects.Paddle;
 import com.ball.game.objects.utils.FSTM;
 import com.ball.game.objects.utils.GameObjectFactory;
 import com.ball.game.objects.utils.PaddleDirection;
+import com.ball.game.objects.utils.Registry;
 
 public class BallGame extends AbstractGameScreen {
 
 	private static final Color BORDER_COLOR = new Color(0.38f, 0.49f, 0.55f, 1);
 	public static float BALL_VELOCITY = 0f;
-	public static float RESET_BALL_VELOCITY = 0f;
-	// FPSLogger logger=new FPSLogger();
 	public int gameCount = 0;
 	public GameObjectFactory goFactory;
-
+	public static Registry reg=Registry.INSTANCE;
 	public Paddle paddleUp;
 	public Paddle paddleDown;
 	public Paddle paddleLeft;
@@ -41,8 +40,6 @@ public class BallGame extends AbstractGameScreen {
 	public Ball ball;
 	Rectangle border;
 	public Magic magic;
-	public int WINDOW_WIDTH;
-	public int WINDOW_HEIGHT;
 	private Rectangle field = new Rectangle();
 	public ShapeRenderer shapeRenderer;
 	public float fieldBottom;
@@ -66,11 +63,8 @@ public class BallGame extends AbstractGameScreen {
 	@Override
 	public void show() {
 		shapeRenderer = new ShapeRenderer();
-		WINDOW_WIDTH = Gdx.graphics.getWidth();
-		WINDOW_HEIGHT = Gdx.graphics.getHeight();
 		//TODO: move to other const after show
-		RESET_BALL_VELOCITY = (WINDOW_HEIGHT + WINDOW_WIDTH) / 5;
-		goFactory = new GameObjectFactory(WINDOW_WIDTH, WINDOW_HEIGHT);
+		goFactory = new GameObjectFactory();
 		reset();
 		setUpScreenBounds();
 		Timer timer = new Timer();
@@ -119,7 +113,7 @@ public class BallGame extends AbstractGameScreen {
 	}
 
 	private void setUpScreenBounds() {
-		field.set(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+		field.set(0, 0, reg.WINDOW_WIDTH, reg.WINDOW_HEIGHT);
 		fieldLeft = border.x;
 		fieldRight = border.x + border.width;
 		fieldBottom = border.y;
@@ -156,7 +150,7 @@ public class BallGame extends AbstractGameScreen {
 
 	private void drawScore(float dt) {
 		spriteBatch.begin();
-		font.draw(spriteBatch, layout, GameObjectFactory.BLOCK_SIZE, WINDOW_HEIGHT - GameObjectFactory.BLOCK_SIZE / 3);
+		font.draw(spriteBatch, layout, reg.BLOCK_SIZE, reg.WINDOW_HEIGHT - reg.BLOCK_SIZE / 3);
 		spriteBatch.end();
 	}
 
@@ -183,14 +177,13 @@ public class BallGame extends AbstractGameScreen {
 
 	public static Vector2 getBallVelocity() {
 		Vector2 velocity = new Vector2();
-		velocity.set(RESET_BALL_VELOCITY, 0f);
+		velocity.set(reg.RESET_BALL_VELOCITY, 0f);
 		velocity.setAngle(-135f);
 		return velocity;
 	}
 
 	public int getScore(int max, float size) {
-		int score = (max - Math.round(size)) / 10;
-		return score;
+		return (max - Math.round(size)) / 10;
 	}
 
 	@Override

@@ -11,13 +11,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.ball.game.objects.utils.FSTM.States;
 import com.ball.game.objects.utils.GameObject;
 import com.ball.game.objects.utils.GameObjectFactory;
+import com.ball.game.objects.utils.Registry;
 import com.ball.game.screens.BallGame;
 import com.ball.game.util.GeometryUtil;
 
 public class Ball extends GameObject {
 
 	private static final Color BALL_COLOR = new Color(0.96f, 0.26f, 0.21f, 1f);
-
+	private static final Registry reg=Registry.INSTANCE;
 	public Ball(float width, float height) {
 		super(width, height);
 
@@ -56,19 +57,19 @@ public class Ball extends GameObject {
 
 		// Paddle collision
 		if (ballGame.ball.getBounds().overlaps(ballGame.paddleLeft.getBounds())) {
-			ballGame.score += ballGame.getScore(ballGame.WINDOW_HEIGHT, ballGame.paddleLeft.getHeight());
+			ballGame.score += ballGame.getScore(reg.WINDOW_HEIGHT, ballGame.paddleLeft.getHeight());
 			handleLeftCollision(ballGame.ball, ballGame.paddleLeft,ballGame);
 			ballGame.nrOfBounces.incrementAndGet();
 		} else if (ballGame.ball.getBounds().overlaps(ballGame.paddleRight.getBounds())) {
-			ballGame.score += ballGame.getScore(ballGame.WINDOW_HEIGHT, ballGame.paddleRight.getHeight());
+			ballGame.score += ballGame.getScore(reg.WINDOW_HEIGHT, ballGame.paddleRight.getHeight());
 			handleRightCollision(ballGame.ball, ballGame.paddleRight,ballGame);
 			ballGame.nrOfBounces.incrementAndGet();
 		} else if (ballGame.ball.getBounds().overlaps(ballGame.paddleUp.getBounds())) {
-			ballGame.score += ballGame.getScore(ballGame.WINDOW_WIDTH, ballGame.paddleUp.getWidth());
+			ballGame.score += ballGame.getScore(reg.WINDOW_WIDTH, ballGame.paddleUp.getWidth());
 			handleUpCollision(ballGame.ball, ballGame.paddleUp,ballGame);
 			ballGame.nrOfBounces.incrementAndGet();
 		} else if (ballGame.ball.getBounds().overlaps(ballGame.paddleDown.getBounds())) {
-			ballGame.score += ballGame.getScore(ballGame.WINDOW_WIDTH, ballGame.paddleDown.getWidth());
+			ballGame.score += ballGame.getScore(reg.WINDOW_WIDTH, ballGame.paddleDown.getWidth());
 			handleDownCollision(ballGame.ball, ballGame.paddleDown,ballGame);
 			ballGame.nrOfBounces.incrementAndGet();
 		} else if (ballGame.magic.isInState(States.VISIBLE) && ballGame.ball.getBounds().overlaps(ballGame.magic.getBounds())) {

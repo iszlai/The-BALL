@@ -9,10 +9,12 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.ball.game.objects.utils.GameObject;
+import com.ball.game.objects.utils.Registry;
 import com.ball.game.screens.BallGame;
 
 public class Paddle extends GameObject {
 // Constructors
+	private static Registry reg=Registry.INSTANCE;
 	private Rectangle touchBounds = new Rectangle();
 	private float width;
 	private float height;
@@ -40,9 +42,9 @@ public class Paddle extends GameObject {
 		boolean moveDown = false;
 		boolean moveLeft = false;
 		boolean moveRight = false;
-		Vector2 touch = null;
+		Vector2 touch ;
 		if (Gdx.input.isTouched()) {
-			touch = new Vector2(Gdx.input.getX(), ballGame.WINDOW_HEIGHT - Gdx.input.getY());
+			touch = new Vector2(Gdx.input.getX(), reg.WINDOW_HEIGHT - Gdx.input.getY());
 			if (ballGame.paddleDown.getTouchBounds().contains(touch)) {
 				moveDown = true;
 			} else if (ballGame.paddleUp.getTouchBounds().contains(touch)) {

@@ -6,10 +6,12 @@ import com.ball.game.objects.Ball;
 import com.ball.game.objects.Paddle;
 import com.ball.game.objects.utils.GameObjectFactory;
 import com.ball.game.objects.utils.PaddleDirection;
+import com.ball.game.objects.utils.Registry;
 import com.ball.game.screens.BallGame;
 
 public class CollisionUtils {
 	private static final float BALL_VELOCITY_MODIFIER = 1.01f;
+	private static Registry reg=Registry.INSTANCE;
 
 	public static void handleRightCollision(Ball ball, Paddle paddleRight,BallGame ballGame) {
 		if (ball.right() > paddleRight.left() && ball.left() < paddleRight.left()) {
@@ -78,7 +80,7 @@ public class CollisionUtils {
 	private static boolean shrinkVerticlePaddle(float shrinkBase, Paddle paddle) {
 		Rectangle bounds = paddle.getBounds();
 		float newHeight = bounds.getHeight() - shrinkBase;
-		if(newHeight<GameObjectFactory.BLOCK_SIZE){
+		if(newHeight<reg.BLOCK_SIZE){
 			return true;
 		}
 		bounds.setHeight(newHeight);
@@ -89,7 +91,7 @@ public class CollisionUtils {
 	private static boolean shrinkHorizontalPaddle(float shrinkBase, Paddle paddle) {
 		Rectangle bounds = paddle.getBounds();
 		float newWidth = bounds.getWidth() - shrinkBase;
-		if(newWidth<GameObjectFactory.BLOCK_SIZE){
+		if(newWidth<reg.BLOCK_SIZE){
 			return true;
 		}
 		bounds.setWidth(newWidth);
