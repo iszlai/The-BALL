@@ -12,6 +12,8 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.ball.game.objects.utils.FontSizes;
+import com.ball.game.objects.utils.Registry;
 
 public class MenuScreen extends AbstractGameScreen {
 
@@ -26,6 +28,7 @@ public class MenuScreen extends AbstractGameScreen {
 	private Sprite sprite;
 	private FreeTypeFontGenerator generator;
 	private FreeTypeFontParameter parameter;
+    Registry reg = Registry.INSTANCE;
 
 	public MenuScreen(Game game) {
 		super(game);
@@ -41,13 +44,10 @@ public class MenuScreen extends AbstractGameScreen {
 		textureAtlas = new TextureAtlas(Gdx.files.internal("vivace.pack"));
 		initPlayButton();
 		layout = new GlyphLayout();
-		generator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
-		parameter = new FreeTypeFontParameter();
-		parameter.size = Math.round(Gdx.graphics.getDensity() * 100);
-		font = generator.generateFont(parameter);
-		font.setColor(new Color(0.96f, 0.26f, 0.21f, 1f));
-		layout.setText(font, "Vivace");
-	}
+        font = reg.getFont(FontSizes.LARGE);
+        font.setColor(new Color(0.96f, 0.26f, 0.21f, 1f));
+        layout.setText(font, "Vivace");
+    }
 
 	private void initPlayButton() {
 		play = textureAtlas.findRegion("play");
@@ -78,7 +78,6 @@ public class MenuScreen extends AbstractGameScreen {
 
 			if (sprite.getBoundingRectangle().contains(x, y)) {
 				game.setScreen(new BallGame(game));
-				return;
 			}
 		}
 

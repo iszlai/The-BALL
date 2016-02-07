@@ -1,10 +1,5 @@
 package com.ball.game.objects;
 
-import static com.ball.game.util.CollisionUtils.handleDownCollision;
-import static com.ball.game.util.CollisionUtils.handleLeftCollision;
-import static com.ball.game.util.CollisionUtils.handleRightCollision;
-import static com.ball.game.util.CollisionUtils.handleUpCollision;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -14,6 +9,11 @@ import com.ball.game.objects.utils.GameObjectFactory;
 import com.ball.game.objects.utils.Registry;
 import com.ball.game.screens.BallGame;
 import com.ball.game.util.GeometryUtil;
+
+import static com.ball.game.util.CollisionUtils.handleDownCollision;
+import static com.ball.game.util.CollisionUtils.handleLeftCollision;
+import static com.ball.game.util.CollisionUtils.handleRightCollision;
+import static com.ball.game.util.CollisionUtils.handleUpCollision;
 
 public class Ball extends GameObject {
 
@@ -77,8 +77,9 @@ public class Ball extends GameObject {
 			ballGame.magic.isActive.set(false);
 			ballGame.magic.transition(States.SPELL_ACTIVE);
 			ballGame.magic.doMagicOnBall(ballGame.ball);
-		}
-	}
+            ballGame.isNewMagicNeeded.set(true);
+        }
+    }
 
 	public static void endRound(BallGame ballGame) {
 		ballGame.gameCount++;

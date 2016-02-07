@@ -1,10 +1,5 @@
 package com.ball.game.screens;
 
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -12,8 +7,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
@@ -22,9 +15,15 @@ import com.ball.game.objects.Ball;
 import com.ball.game.objects.Magic;
 import com.ball.game.objects.Paddle;
 import com.ball.game.objects.utils.FSTM;
+import com.ball.game.objects.utils.FontSizes;
 import com.ball.game.objects.utils.GameObjectFactory;
 import com.ball.game.objects.utils.PaddleDirection;
 import com.ball.game.objects.utils.Registry;
+
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class BallGame extends AbstractGameScreen {
 
@@ -38,23 +37,21 @@ public class BallGame extends AbstractGameScreen {
 	public Paddle paddleLeft;
 	public Paddle paddleRight;
 	public Ball ball;
-	Rectangle border;
-	public Magic magic;
-	private Rectangle field = new Rectangle();
-	public ShapeRenderer shapeRenderer;
-	public float fieldBottom;
+    public Rectangle border;
+    public Magic magic;
+    private Rectangle field = new Rectangle();
+    public ShapeRenderer shapeRenderer;
+    public float fieldBottom;
 	public float fieldLeft;
 	public float fieldRight;
 	public float fieldTop;
 	public int score;
-	//TODO: FONTSGENERATION should be once
-	private FreeTypeFontGenerator generator;
-	private FreeTypeFontParameter parameter;
 	private BitmapFont font;
 	private GlyphLayout layout;
 	private SpriteBatch spriteBatch;
 	public AtomicBoolean isMagicOn = new AtomicBoolean(false);
-	public AtomicLong nrOfBounces = new AtomicLong();
+    public AtomicBoolean isNewMagicNeeded = new AtomicBoolean(false);
+    public AtomicLong nrOfBounces = new AtomicLong();
 
 	public BallGame(Game game) {
 		super(game);
@@ -70,25 +67,27 @@ public class BallGame extends AbstractGameScreen {
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
 
-			@Override
-			public void run() {
-			//	System.out.println("----------------");
-				if(magic.isInState(FSTM.States.INVISIBLE)){
-					magic.isActive.set(true);
-					magic.transition(FSTM.States.VISIBLE);
-				}else if(magic.isInState(FSTM.States.VISIBLE)){
-					magic.transition(FSTM.States.INVISIBLE);
-					magic.isActive.set(false);
-				}else if(magic.isInState(FSTM.States.SPELL_ACTIVE)){
-					magic.transition(FSTM.States.SPELL_INACTIVE);
-					magic.undoMagicOnBall(ball);
-					magic.isActive.set(false);
-				}else if(magic.isInState(FSTM.States.SPELL_INACTIVE)){
-					magic.transition(FSTM.States.INVISIBLE);
-					magic.isActive.set(false);
-				}
-			}
-		}, 0, 4000);
+            @Override
+            public void run() {
+                //	System.out.println("----------------");
+                if (magic.isInState(FSTM.States.INVISIBLE)) {
+                    magic.isActive.set(true);
+                    magic.transition(FSTM.States.VISIBLE);
+                } else if (magic.isInState(FSTM.States.VISIBLE)) {
+                    magic.transition(FSTM.States.INVISIBLE);
+                    magic.isActive.set(false);
+                    isNewMagicNeeded.set(true);
+                } else if (magic.isInState(FSTM.States.SPELL_ACTIVE)) {
+                    magic.transition(FSTM.States.SPELL_INACTIVE);
+                    magic.undoMagicOnBall(ball);
+                    magic.isActive.set(false);
+                } else if (magic.isInState(FSTM.States.SPELL_INACTIVE)) {
+                    magic.transition(FSTM.States.INVISIBLE);
+                    magic.isActive.set(false);
+
+                }
+            }
+        }, 0, 4000);
 
 	}
 
@@ -102,13 +101,10 @@ public class BallGame extends AbstractGameScreen {
 		border = goFactory.getBorder();
         //TODO: Check for reuse or seed
 		magic = goFactory.getMagic(border);
-		generator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
-		parameter = new FreeTypeFontParameter();
-		parameter.size = Math.round(Gdx.graphics.getDensity() * 30);
-		font = generator.generateFont(parameter);
-		font.setColor(new Color(0.96f, 0.26f, 0.21f, 1f));
-		layout = new GlyphLayout();
-		spriteBatch = new SpriteBatch();
+        font = reg.getFont(FontSizes.SMALL);
+        font.setColor(new Color(0.96f, 0.26f, 0.21f, 1f));
+        layout = new GlyphLayout();
+        spriteBatch = new SpriteBatch();
 
 	}
 
@@ -130,9 +126,10 @@ public class BallGame extends AbstractGameScreen {
 
 	private void update(float dt) {
 		Ball.updateBall(this, dt);
-		Paddle.updatePaddles(this, dt);
-		layout.setText(font, "Score: " + score);
-		//Magic.updateMagic(this);
+        Paddle.updatePaddles(this, dt);
+        layout.setText(font, "Score: " + score);
+        changeMagicIfNeeded();
+        //Magic.updateMagic(this);
 
 	}
 
@@ -143,24 +140,24 @@ public class BallGame extends AbstractGameScreen {
 		shapeRenderer.begin(ShapeType.Filled);
 		Ball.drawBall(shapeRenderer, ball, dt);
 		Paddle.drawPaddles(this);
-		Magic.drawMagic(this, dt);
-		shapeRenderer.end();
-		drawScore(dt);
-	}
+        Magic.drawMagic(this, dt);
+        shapeRenderer.end();
+        drawScore(dt);
+    }
 
 	private void drawScore(float dt) {
 		spriteBatch.begin();
-		font.draw(spriteBatch, layout, reg.BLOCK_SIZE, reg.WINDOW_HEIGHT - reg.BLOCK_SIZE / 3);
-		spriteBatch.end();
-	}
+        font.draw(spriteBatch, layout, reg.BLOCK_SIZE, reg.WINDOW_HEIGHT - reg.BLOCK_SIZE / 3);
+        spriteBatch.end();
+    }
 
 	private void drawBorder() {
 		shapeRenderer.begin(ShapeType.Line);
-		shapeRenderer.setColor(BORDER_COLOR);
-		for (int i = 1; i < 10; i++) {
-			shapeRenderer.rect(border.x - i, border.y - i, border.width + i * 2, border.height + i * 2);
-		}
-		shapeRenderer.end();
+        shapeRenderer.setColor(BORDER_COLOR);
+        for (int i = 1; i < 10; i++) {
+            shapeRenderer.rect(border.x - i, border.y - i, border.width + i * 2, border.height + i * 2);
+        }
+        shapeRenderer.end();
 	}
 
 	public void reset() {
@@ -182,6 +179,14 @@ public class BallGame extends AbstractGameScreen {
 		return velocity;
 	}
 
+
+    public void changeMagicIfNeeded() {
+        if (isNewMagicNeeded.getAndSet(false)) {
+            this.magic = goFactory.getMagic(border);
+            magic.isActive.set(false);
+        }
+    }
+
 	public int getScore(int max, float size) {
 		return (max - Math.round(size)) / 10;
 	}
@@ -190,7 +195,6 @@ public class BallGame extends AbstractGameScreen {
 	public void dispose() {
 		shapeRenderer.dispose();
 		spriteBatch.dispose();
-		generator.dispose();
 	}
 
 }

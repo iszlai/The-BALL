@@ -10,8 +10,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.ball.game.objects.utils.FontSizes;
+import com.ball.game.objects.utils.Registry;
 
 public class ScoreScreen extends AbstractGameScreen{
 
@@ -24,13 +24,12 @@ public class ScoreScreen extends AbstractGameScreen{
 	private TextureAtlas textureAtlas;
 	private AtlasRegion reload;
 	private Sprite sprite;
-	private FreeTypeFontGenerator generator;
-	private FreeTypeFontParameter parameter;
-	
-	public ScoreScreen(Game game,int score) {
-		super(game);
-		this.score=score;
-	}
+    private Registry reg = Registry.INSTANCE;
+
+    public ScoreScreen(Game game, int score) {
+        super(game);
+        this.score = score;
+    }
 	
 	@Override
 	public void show() {
@@ -43,14 +42,11 @@ public class ScoreScreen extends AbstractGameScreen{
 		textureAtlas = new TextureAtlas(Gdx.files.internal("vivace.pack"));
 		reload = textureAtlas.findRegion("reset");
 		sprite = new Sprite(reload);
-		generator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
-		parameter = new FreeTypeFontParameter();
-		parameter.size = Math.round (Gdx.graphics.getDensity()*60);
-		font = generator.generateFont(parameter);
-		font.setColor(new Color(0.96f, 0.26f, 0.21f, 1f));
-		sprite.scale(1.1f);
-		sprite.setPosition(WINDOW_WIDTH/3-sprite.getWidth()/2, WINDOW_HEIGHT/4-sprite.getHeight()/2);
-	}
+        font = reg.getFont(FontSizes.MEDIUM);
+        font.setColor(new Color(0.96f, 0.26f, 0.21f, 1f));
+        sprite.scale(1.1f);
+        sprite.setPosition(WINDOW_WIDTH / 3 - sprite.getWidth() / 2, WINDOW_HEIGHT / 4 - sprite.getHeight() / 2);
+    }
 	@Override
 	public void render(float delta) {
 		Gdx.graphics.getGL20().glClearColor(1f, 0.95f, 0.88f, 1f);
@@ -70,7 +66,6 @@ public class ScoreScreen extends AbstractGameScreen{
 
 			if (sprite.getBoundingRectangle().contains(x, y)) {
 				game.setScreen(new BallGame(game));
-				return;
 			}
 		}
 
@@ -80,7 +75,6 @@ public class ScoreScreen extends AbstractGameScreen{
 	public void dispose() {
 		Gdx.app.debug("Cubocy", "dispose main menu");
 		spriteBatch.dispose();
-		generator.dispose();
 		textureAtlas.dispose();
 	}
 }

@@ -1,8 +1,5 @@
 package com.ball.game.objects;
 
-import static com.ball.game.util.CollisionUtils.paddleHorizontalCheck;
-import static com.ball.game.util.CollisionUtils.paddleVerticalCheck;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -11,6 +8,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.ball.game.objects.utils.GameObject;
 import com.ball.game.objects.utils.Registry;
 import com.ball.game.screens.BallGame;
+
+import static com.ball.game.util.CollisionUtils.paddleHorizontalCheck;
+import static com.ball.game.util.CollisionUtils.paddleVerticalCheck;
 
 public class Paddle extends GameObject {
 // Constructors
@@ -81,7 +81,8 @@ public class Paddle extends GameObject {
 			paddleVerticalCheck(ballGame.paddleLeft, ballGame.paddleUp.bottom(), ballGame.paddleDown.top());
 			paddleVerticalCheck(ballGame.paddleRight, ballGame.paddleUp.bottom(), ballGame.paddleDown.top());
 			paddleHorizontalCheck(ballGame.paddleUp, ballGame.paddleLeft.right(), ballGame.paddleRight.left());
-			paddleHorizontalCheck(ballGame.paddleDown, ballGame.paddleLeft.right(), ballGame.paddleRight.left());
+            paddleHorizontalCheck(ballGame.paddleDown, ballGame.paddleLeft.right(), ballGame.paddleRight.left());
+
 		}
 	}
 	

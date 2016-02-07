@@ -1,13 +1,13 @@
 package com.ball.game.objects.utils;
 
-import java.security.SecureRandom;
-import java.util.Random;
-
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.ball.game.objects.Ball;
 import com.ball.game.objects.Magic;
 import com.ball.game.objects.Paddle;
+
+import java.security.SecureRandom;
+import java.util.Random;
 
 public class GameObjectFactory {
     Registry reg = Registry.INSTANCE;
@@ -50,8 +50,8 @@ public class GameObjectFactory {
     }
 
     public Magic getMagic(Rectangle border) {
-
-        Magic magic = new Magic(reg.BLOCK_SIZE / 2, reg.BLOCK_SIZE / 2, randomEnum(MagicType.class));
+        MagicType magicType = randomEnum(MagicType.class);
+        Magic magic = new Magic(reg.BLOCK_SIZE_HALF, reg.BLOCK_SIZE_HALF, magicType);
         float x = border.getX() + randomWithbounds(3, 6) * reg.BLOCK_SIZE;
         float y = border.getY() + randomWithbounds(2, 3) * reg.BLOCK_SIZE;
         magic.setPosition(new Vector2(x, y));
@@ -63,7 +63,7 @@ public class GameObjectFactory {
     }
 
     public Ball getBall(Rectangle field) {
-        Ball ball = new Ball(reg.BLOCK_SIZE / 2, reg.BLOCK_SIZE / 2);
+        Ball ball = new Ball(reg.BLOCK_SIZE_HALF, reg.BLOCK_SIZE_HALF);
         ball.move(field.x + (field.width - ball.getWidth()) / 2, field.y + (field.height - ball.getHeight()) / 2);
         return ball;
     }

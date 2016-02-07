@@ -4,13 +4,12 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.ball.game.objects.Ball;
 import com.ball.game.objects.Paddle;
-import com.ball.game.objects.utils.GameObjectFactory;
 import com.ball.game.objects.utils.PaddleDirection;
 import com.ball.game.objects.utils.Registry;
 import com.ball.game.screens.BallGame;
 
 public class CollisionUtils {
-	private static final float BALL_VELOCITY_MODIFIER = 1.01f;
+
 	private static Registry reg=Registry.INSTANCE;
 
 	public static void handleRightCollision(Ball ball, Paddle paddleRight,BallGame ballGame) {
@@ -20,8 +19,8 @@ public class CollisionUtils {
 
 			Vector2 velocity = ball.getVelocity();
 			velocity.setAngle(180f - GeometryUtil.getReflectionAngle(ball, paddleRight));
-			velocity.scl(BALL_VELOCITY_MODIFIER);
-			ball.setVelocity(velocity);
+            velocity.scl(Registry.BALL_VELOCITY_MODIFIER);
+            ball.setVelocity(velocity);
 
 			if (shrinkVerticlePaddle(ball.getHeight() * 2, paddleRight)){
 				ballGame.paddleRight=ballGame.goFactory.getRegurarPaddle(PaddleDirection.RIGHT);
@@ -37,11 +36,11 @@ public class CollisionUtils {
 
 			Vector2 velocity = ball.getVelocity();
 			velocity.setAngle(GeometryUtil.getReflectionAngle(ball, paddleLeft));
-			velocity.scl(BALL_VELOCITY_MODIFIER);
-			ball.setVelocity(velocity);
-			if(shrinkVerticlePaddle(ball.getHeight() * 2, paddleLeft)){
-				ballGame.paddleLeft=ballGame.goFactory.getRegurarPaddle(PaddleDirection.LEFT);
-			}
+            velocity.scl(Registry.BALL_VELOCITY_MODIFIER);
+            ball.setVelocity(velocity);
+            if (shrinkVerticlePaddle(ball.getHeight() * 2, paddleLeft)) {
+                ballGame.paddleLeft = ballGame.goFactory.getRegurarPaddle(PaddleDirection.LEFT);
+            }
 		}
 	}
 
@@ -53,8 +52,8 @@ public class CollisionUtils {
 
 			Vector2 velocity = ball.getVelocity();
 			velocity.setAngle(GeometryUtil.getReflectionAngle(ball, paddleUp));
-			velocity.scl(BALL_VELOCITY_MODIFIER);
-			ball.setVelocity(velocity);
+            velocity.scl(Registry.BALL_VELOCITY_MODIFIER);
+            ball.setVelocity(velocity);
 
 			if(shrinkHorizontalPaddle(ball.getWidth() * 2, paddleUp)){
 				ballGame.paddleUp=ballGame.goFactory.getRegurarPaddle(PaddleDirection.UP);
@@ -69,11 +68,11 @@ public class CollisionUtils {
 
 			Vector2 velocity = ball.getVelocity();
 			velocity.setAngle(GeometryUtil.getReflectionAngle(ball, paddleDown));
-			velocity.scl(BALL_VELOCITY_MODIFIER);
-			ball.setVelocity(velocity);
-			if(shrinkHorizontalPaddle(ball.getWidth() * 2, paddleDown)){
-				ballGame.paddleDown=ballGame.goFactory.getRegurarPaddle(PaddleDirection.DOWN);
-			}
+            velocity.scl(Registry.BALL_VELOCITY_MODIFIER);
+            ball.setVelocity(velocity);
+            if (shrinkHorizontalPaddle(ball.getWidth() * 2, paddleDown)) {
+                ballGame.paddleDown = ballGame.goFactory.getRegurarPaddle(PaddleDirection.DOWN);
+            }
 		}
 	}
 
@@ -118,8 +117,16 @@ public class CollisionUtils {
 		if (paddle1.right() > fieldRight) {
 			paddle1.move(fieldRight - paddle1.getWidth(), paddle1.getY());
 			paddle1.setVelocity(0f, 0f);
-		}
-	}
+        }
+    }
+
+    //TODO:replace other checks with this
+    public static void paddleOverlapCheck(Paddle src, Paddle target, Paddle target2, Rectangle border) {
+        if (src.getBounds().overlaps(target.getBounds()) || src.getBounds().overlaps(target2.getBounds()) || !src.getBounds().contains(border)) {
+            //needs where to move
+            src.setVelocity(0f, 0f);
+        }
+    }
 
 
 
