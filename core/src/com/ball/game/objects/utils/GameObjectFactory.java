@@ -27,12 +27,12 @@ public class GameObjectFactory {
                 return paddle;
             }
             case LEFT: {
-                Paddle paddle = getPaddle( reg.PADDLE_LENGTH_V,reg.PADDLE_HEIGHT);
+                Paddle paddle = getPaddle( reg.PADDLE_HEIGHT,reg.PADDLE_LENGTH_V);
                 paddle.setPosition(new Vector2(reg.PADDING_V, reg.PADDING_H));
                 return paddle;
             }
             case RIGHT: {
-                Paddle paddle = getPaddle( reg.PADDLE_LENGTH_V,reg.PADDLE_HEIGHT);
+                Paddle paddle = getPaddle( reg.PADDLE_HEIGHT,reg.PADDLE_LENGTH_V);
                 paddle.setPosition(new Vector2(reg.PADDING_H + reg.PADDLE_LENGTH_H, reg.PADDING_H));
                 return paddle;
             }
